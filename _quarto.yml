@@ -2,18 +2,22 @@ project:
   type: website
 
 website:
-  title: "blog2"
+  title: "R for Linguistics"
   navbar:
     right:
       - about.qmd
       - icon: github
-        href: https://github.com/
+        href: https://github.com/daniela-palleschi
       - icon: twitter
-        href: https://twitter.com
+        href: https://twitter.com/dpalleswho
+      - icon: rss
+        href: index.xml
 format:
   html:
-    theme: cosmo
+    theme: flatly
     css: styles.css
+    
+csl: apa.csl
 
 
 
