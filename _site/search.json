@@ -14,11 +14,25 @@
     "text": "This is a post with executable code.\n\n1 + 1\n\n[1] 2"
   },
   {
-    "objectID": "future-posts/git-with-rproj/index.html",
-    "href": "future-posts/git-with-rproj/index.html",
-    "title": "GitHub with RProject",
+    "objectID": "future-posts/repro/index.html",
+    "href": "future-posts/repro/index.html",
+    "title": "Reproducibility 101",
     "section": "",
-    "text": "My first blog."
+    "text": "Bryan, Jenny, and Jim Hester. What They Forgot to Teach You About R. (2019). url: https://rstats.wtf/\nBryan, Jenny (). Happy Git and GitHub for the useRhttps://happygitwithr.com/\nBlogpost An Introduction to Docker for R Users by Colin Fay https://colinfay.me/docker-r-reproducibility/\nReproducible Work in R: Why and How to use Docker in your daily R workflow (2019) by Rahul S. https://towardsdatascience.com/reproducible-work-in-r-e7d160d5d198\n\n\n\n\n[here]\n[renv]\n[targets]\n[docker]"
+  },
+  {
+    "objectID": "future-posts/repro/index.html#reading",
+    "href": "future-posts/repro/index.html#reading",
+    "title": "Reproducibility 101",
+    "section": "",
+    "text": "Bryan, Jenny, and Jim Hester. What They Forgot to Teach You About R. (2019). url: https://rstats.wtf/\nBryan, Jenny (). Happy Git and GitHub for the useRhttps://happygitwithr.com/\nBlogpost An Introduction to Docker for R Users by Colin Fay https://colinfay.me/docker-r-reproducibility/\nReproducible Work in R: Why and How to use Docker in your daily R workflow (2019) by Rahul S. https://towardsdatascience.com/reproducible-work-in-r-e7d160d5d198"
+  },
+  {
+    "objectID": "future-posts/repro/index.html#packages",
+    "href": "future-posts/repro/index.html#packages",
+    "title": "Reproducibility 101",
+    "section": "",
+    "text": "[here]\n[renv]\n[targets]\n[docker]"
   },
   {
     "objectID": "posts/papapja7/index.html",
@@ -49,38 +63,24 @@
     "text": "YAML\nFor reference, the YAML in my final metafile looks something like this:\n\n---\ntitle             : \"Title\"\nauthor: \n  - name          : \"Daniela Palleschi\"\n\n[...]\n\nbibliography      : [\"references.bib\"]\nfloatsintext      : yes\nfigurelist        : yes\nnumbersections    : yes\ntablelist         : yes\nfootnotelist      : no\nlinenumbers       : yes\nmask              : no\ndraft             : no\ncsl               : \"`r system.file('rmd', 'apa7.csl', package = 'papaja')`\"\ndocumentclass     : \"apa7\"\nclassoption       : \"man\"\nkeep_tex: true\noutput: \n  papaja::apa6_pdf:\n    # citation_package: natbib # so that the TEX file output will contain LaTeX formatted citations\n# natbiboptions: round # so that natbib use parantheses for citations and not square brackets\nbiblio-style: apalike\nauthornote: |\n  \\addORCIDlink{Daniela M. Palleschi}{0000-0002-7633-2736}\nheader-includes:\n- |\n    \\makeatletter\n    \\renewcommand{\\paragraph}{\\@startsection{paragraph}{4}{\\parindent}%\n      {0\\baselineskip \\@plus 0.2ex \\@minus 0.2ex}%\n      {-1em}%\n      {\\normalfont\\normalsize\\bfseries\\typesectitle}}\n    \\renewcommand{\\subparagraph}[1]{\\@startsection{subparagraph}{5}{1em}%\n      {0\\baselineskip \\@plus 0.2ex \\@minus 0.2ex}%\n      {-\\z@\\relax}%\n      {\\normalfont\\normalsize\\bfseries\\itshape\\hspace{\\parindent}{#1}\\textit{\\addperi}}{\\relax}}\n    \\makeatother\n    \\usepackage{float}\n    \\usepackage{multirow}\n    \\usepackage{makecell}\n    \\usepackage{gb4e} \\noautomath\n    \\usepackage{dblfloatfix}\n    \\usepackage{hyperref}\n    \\usepackage{booktabs}\n    \\usepackage{array}\n    \\usepackage{caption}\n    \\captionsetup[table]{textfont={it}, labelfont={bf}, singlelinecheck=false, labelsep=newline}\n    \\usepackage{multirow,graphicx}\n    \\usepackage{fdsymbol}\n    \\usepackage{setspace}\n    \\AtBeginEnvironment{tabular}{\\singlespacing}\n    \\AtBeginEnvironment{lltable}{\\singlespacing}\n    \\AtBeginEnvironment{tablenotes}{\\doublespacing}\n    \\captionsetup[table]{font={stretch=1.5}}\n    \\captionsetup[figure]{font={stretch=1.5}}\neditor_options: \n  chunk_output_type: console\n---"
   },
   {
-    "objectID": "future-posts/welcome/index.html",
-    "href": "future-posts/welcome/index.html",
+    "objectID": "future-posts/git-with-rproj/index.html",
+    "href": "future-posts/git-with-rproj/index.html",
+    "title": "GitHub with RProject",
+    "section": "",
+    "text": "My first blog."
+  },
+  {
+    "objectID": "future-posts/purpose/index.html",
+    "href": "future-posts/purpose/index.html",
     "title": "Closing 2023",
     "section": "",
     "text": "It feels strange to be starting a blog dedicated to (lingusitic) data analysis, as like most linguists I’m essentially self-taught in R in that the courses that were offered during my studies did not take me quite as far as I needed to go. As I understand it, this is not something unique to linguistics. As noted in Lawlor et al. (2022) (a highly recommended read), Emery et al. (2021) reported that the vast majority of life science educators surveyed rated data skills as highly important for students, and yet only about half of respondents indicated that such skills were likely to be learned in required or even elective courses, with ‘Course in another department’ receiving the highest overall likelihood rating. I believe we are in a similar situation in the language sciences: For students and researchers to be successful and competitive candidates for future positions/study programs, data skills are important, but they’re not so important that we expect our students will be learning them to satisfaction in our departments? The call is coming from inside the house…\nI say all this as a former linguistics student myself. I see myself in my current students and peers. We started studying linguistics because of the humanities aspect of the field: understanding language, dissecting and developing language theory, observing and describing language patterns and differences between speakers and speaker communities. The last thing we were thinking about was math and computer science, but alas, here I find myself starting a blog on just that topic (or at least a sub-topic). And so, here is one of my intentions for 2024: regularly write mini-tutorials in this blog to (a) help students/peers, (b) map out topics for courses, workshops, or single lectures, and (c) remind future-me how I did something. Though reason (a) might seem totally selfless, when you consider my current position includes teaching and consulting on similar topics, this actually will lighten my workload in the long run, as I won’t have to provide consultations on the same problem over and over again! Reasons (b) and (c) are also pretty self-serving in that they’ll simplify my workflow and productivity. So in conclusion, I’m creating this blog for totally selfish reasons, namely to make my own life easier, and if it helps others in the long run that’s just icing on the cake.\nTo selfishly helping others in 2024, and Auld Lang Syne!\n\n\n\n\nReferences\n\nEmery, N. C., Crispo, E., Supp, S. R., Farrell, K. J., Kerkhoff, A. J., Bledsoe, E. K., O’Donnell, K. L., McCall, A. C., & Aiello-Lammens, M. E. (2021). Data Science in Undergraduate Life Science Education: A Need for Instructor Skills Training. BioScience, 71(12), 1274–1287. https://doi.org/10.1093/biosci/biab107\n\n\nLawlor, J., Banville, F., Forero-Muñoz, N.-R., Hébert, K., Martínez-Lanfranco, J. A., Rogy, P., & MacDonald, A. A. M. (2022). Ten simple rules for teaching yourself R. PLOS Computational Biology, 18(9), e1010372. https://doi.org/10.1371/journal.pcbi.1010372"
-  },
-  {
-    "objectID": "future-posts/repro/index.html",
-    "href": "future-posts/repro/index.html",
-    "title": "Reproducibility 101",
-    "section": "",
-    "text": "Bryan, Jenny, and Jim Hester. What They Forgot to Teach You About R. (2019). url: https://rstats.wtf/\nBryan, Jenny (). Happy Git and GitHub for the useRhttps://happygitwithr.com/\nBlogpost An Introduction to Docker for R Users by Colin Fay https://colinfay.me/docker-r-reproducibility/\nReproducible Work in R: Why and How to use Docker in your daily R workflow (2019) by Rahul S. https://towardsdatascience.com/reproducible-work-in-r-e7d160d5d198\n\n\n\n\n[here]\n[renv]\n[targets]\n[docker]"
-  },
-  {
-    "objectID": "future-posts/repro/index.html#reading",
-    "href": "future-posts/repro/index.html#reading",
-    "title": "Reproducibility 101",
-    "section": "",
-    "text": "Bryan, Jenny, and Jim Hester. What They Forgot to Teach You About R. (2019). url: https://rstats.wtf/\nBryan, Jenny (). Happy Git and GitHub for the useRhttps://happygitwithr.com/\nBlogpost An Introduction to Docker for R Users by Colin Fay https://colinfay.me/docker-r-reproducibility/\nReproducible Work in R: Why and How to use Docker in your daily R workflow (2019) by Rahul S. https://towardsdatascience.com/reproducible-work-in-r-e7d160d5d198"
-  },
-  {
-    "objectID": "future-posts/repro/index.html#packages",
-    "href": "future-posts/repro/index.html#packages",
-    "title": "Reproducibility 101",
-    "section": "",
-    "text": "[here]\n[renv]\n[targets]\n[docker]"
   },
   {
     "objectID": "index.html",
     "href": "index.html",
     "title": "Welcome!",
     "section": "",
-    "text": "APA 7 in papaja\n\n\n\n\n\n\n\nreproducibility\n\n\nwriting\n\n\n\n\nHow to add a remote git with an existing RProject\n\n\n\n\n\n\nSep 5, 2023\n\n\nDaniela Palleschi\n\n\n\n\n\n\nNo matching items"
+    "text": "APA 7 in papaja\n\n\n\n\n\n\n\nreproducibility\n\n\nwriting\n\n\n\n\nSteps to update papaja to APA 7\n\n\n\n\n\n\nFeb 19, 2024\n\n\nDaniela Palleschi\n\n\n\n\n\n\nNo matching items"
   }
 ]
