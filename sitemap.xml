@@ -2,30 +2,38 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://daniela-palleschi.github.io/blog/about.html</loc>
-    <lastmod>2024-02-19T16:31:50.953Z</lastmod>
+    <lastmod>2024-02-19T16:22:18.000Z</lastmod>
   </url>
   <url>
     <loc>https://daniela-palleschi.github.io/blog/future-posts/my-post/index.html</loc>
-    <lastmod>2024-02-19T16:31:50.494Z</lastmod>
+    <lastmod>2023-09-05T10:56:23.000Z</lastmod>
   </url>
   <url>
     <loc>https://daniela-palleschi.github.io/blog/future-posts/repro/index.html</loc>
-    <lastmod>2024-02-19T16:31:49.461Z</lastmod>
+    <lastmod>2023-12-18T09:46:49.000Z</lastmod>
+  </url>
+  <url>
+    <loc>https://daniela-palleschi.github.io/blog/future-posts/ggeffects/index.html</loc>
+    <lastmod>2024-04-23T12:14:54.000Z</lastmod>
+  </url>
+  <url>
+    <loc>https://daniela-palleschi.github.io/blog/posts/dotplot/index.html</loc>
+    <lastmod>2024-10-14T13:59:12.390Z</lastmod>
   </url>
   <url>
     <loc>https://daniela-palleschi.github.io/blog/posts/papapja7/index.html</loc>
-    <lastmod>2024-02-19T16:31:48.992Z</lastmod>
+    <lastmod>2024-02-19T16:30:54.000Z</lastmod>
   </url>
   <url>
     <loc>https://daniela-palleschi.github.io/blog/future-posts/git-with-rproj/index.html</loc>
-    <lastmod>2024-02-19T16:31:49.232Z</lastmod>
+    <lastmod>2023-12-05T09:26:47.000Z</lastmod>
   </url>
   <url>
     <loc>https://daniela-palleschi.github.io/blog/future-posts/purpose/index.html</loc>
-    <lastmod>2024-02-19T16:31:49.807Z</lastmod>
+    <lastmod>2024-02-19T16:05:44.000Z</lastmod>
   </url>
   <url>
     <loc>https://daniela-palleschi.github.io/blog/index.html</loc>
-    <lastmod>2024-02-19T16:31:50.755Z</lastmod>
+    <lastmod>2024-02-19T16:22:18.000Z</lastmod>
   </url>
 </urlset>

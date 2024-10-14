@@ -6,16 +6,420 @@
       version="2.0">
 <channel>
 <title>R for Linguistics</title>
-<link>https://daniela-palleschi.github.io/blog/index.html</link>
+<link>https://daniela-palleschi.github.io/blog/</link>
 <atom:link href="https://daniela-palleschi.github.io/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
-<generator>quarto-1.3.450</generator>
-<lastBuildDate>Sun, 18 Feb 2024 23:00:00 GMT</lastBuildDate>
+<generator>quarto-1.4.553</generator>
+<lastBuildDate>Sun, 13 Oct 2024 22:00:00 GMT</lastBuildDate>
+<item>
+  <title>Visualising random effects</title>
+  <dc:creator>Daniela Palleschi</dc:creator>
+  <link>https://daniela-palleschi.github.io/blog/posts/dotplot/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>This blog post goes over how to produce visualisations of by-grouping factor (e.g., by-participant) varying intercepts and slopes.</p>
+<p>Required packages for reproducible example:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1">pacman<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">p_load</span>(</span>
+<span id="cb1-2">  languageR, <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># for the example data</span></span>
+<span id="cb1-3">  dplyr, <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># summarising our data</span></span>
+<span id="cb1-4">  janitor, <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># for summarising our data</span></span>
+<span id="cb1-5">  lme4, <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># fitting our model</span></span>
+<span id="cb1-6">  lattice <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># for the caterpillar plots</span></span>
+<span id="cb1-7">)</span></code></pre></div>
+</div>
+<section id="load-repeated-measures-data" class="level2">
+<h2 class="anchored" data-anchor-id="load-repeated-measures-data">Load repeated measures data</h2>
+<p>We’ll use some toy data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">df_lexdec <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> languageR<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span>lexdec</span></code></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">names</span>(df_lexdec)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Subject"        "RT"             "Trial"          "Sex"           
+ [5] "NativeLanguage" "Correct"        "PrevType"       "PrevCorrect"   
+ [9] "Word"           "Frequency"      "FamilySize"     "SynsetCount"   
+[13] "Length"         "Class"          "FreqSingular"   "FreqPlural"    
+[17] "DerivEntropy"   "Complex"        "rInfl"          "meanRT"        
+[21] "SubjFreq"       "meanSize"       "meanWeight"     "BNCw"          
+[25] "BNCc"           "BNCd"           "BNCcRatio"      "BNCdRatio"     </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">head</span>(df_lexdec[<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">9</span>)])</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Subject       RT Trial Sex NativeLanguage       Word
+1      A1 6.340359    23   F        English        owl
+2      A1 6.308098    27   F        English       mole
+3      A1 6.349139    29   F        English     cherry
+4      A1 6.186209    30   F        English       pear
+5      A1 6.025866    32   F        English        dog
+6      A1 6.180017    33   F        English blackberry</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unique</span>(df_lexdec<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>Subject))</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 21</code></pre>
+</div>
+</div>
+<p>There are 21 participants in this dataset.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1">df_lexdec <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb9-2">  dplyr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">count</span>(Subject) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb9-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">count</span>(n, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">name =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Subject"</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   n Subject
+1 79      21</code></pre>
+</div>
+</div>
+<p>We see that all 21 participants had 79 observations, i.e., this was a repeated measures design.</p>
+</section>
+<section id="mixed-effects-model" class="level2">
+<h2 class="anchored" data-anchor-id="mixed-effects-model">Mixed effects model</h2>
+<p>We’ll ignore a lot of steps for the sake of simplicity here. Let’s fit a linear mixed model with log reaction times (<code>RT</code>) as predicted by word frequency (<code>Frequency</code>), with by-participant (<code>Subject</code>) and by-word (<code>Word</code>) varying intercepts and slopes.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1">mod_lexdec <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span></span>
+<span id="cb11-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">lmer</span>(RT <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> Frequency <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> NativeLanguage <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb11-3">         (<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> Frequency <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span> Subject) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb11-4">         (<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> NativeLanguage <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span> Word),</span>
+<span id="cb11-5">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> df_lexdec,</span>
+<span id="cb11-6">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">control =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">lmerControl</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">optimizer =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"bobyqa"</span>)</span>
+<span id="cb11-7">       )</span></code></pre></div>
+</div>
+<p>First: note we have a single varying slope for participant and word each. The effect of <code>Frequency</code> is allowed to vary between participants because each participant contributed data points for words of different frequencies (presumably). The effect of <code>NativeLanguage</code> is allowed to vary between words because we have data points from different NativeLanguage levels (English, Other) for each word (presumably). Importantly, <code>NativeLanguage</code> does not vary within a single subject, nor does word frequency vary within a single word.</p>
+<section id="inspect-model" class="level3">
+<h3 class="anchored" data-anchor-id="inspect-model">Inspect model</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summary</span>(mod_lexdec)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML ['lmerMod']
+Formula: RT ~ Frequency + NativeLanguage + (1 + Frequency | Subject) +  
+    (1 + NativeLanguage | Word)
+   Data: df_lexdec
+Control: lmerControl(optimizer = "bobyqa")
+
+REML criterion at convergence: -964.8
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-2.3977 -0.6132 -0.1193  0.4740  6.2917 
+
+Random effects:
+ Groups   Name                Variance  Std.Dev. Corr 
+ Word     (Intercept)         0.0017172 0.04144       
+          NativeLanguageOther 0.0014730 0.03838  0.74 
+ Subject  (Intercept)         0.0462392 0.21503       
+          Frequency           0.0003824 0.01956  -0.88
+ Residual                     0.0288063 0.16972       
+Number of obs: 1659, groups:  Word, 79; Subject, 21
+
+Fixed effects:
+                     Estimate Std. Error t value
+(Intercept)          6.540876   0.060575 107.981
+Frequency           -0.039879   0.007122  -5.599
+NativeLanguageOther  0.078591   0.054036   1.454
+
+Correlation of Fixed Effects:
+            (Intr) Frqncy
+Frequency   -0.805       
+NtvLnggOthr -0.433  0.103</code></pre>
+</div>
+</div>
+<p>In terms of fixed effects, we see a negative slope for <code>Frequency</code>, indicating shorter log reaction times for more frequent words. We see a positive slope for NativeLanguageOther, indicating longer log reaction times for participants whose first language was not English. We will not consider the size of these effects nor whether they’re “significant”.</p>
+</section>
+</section>
+<section id="random-effects" class="level2">
+<h2 class="anchored" data-anchor-id="random-effects">Random effects</h2>
+<p>We can inspect just the random effects and the variance-covariance matrix:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">VarCorr</span>(mod_lexdec)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Groups   Name                Std.Dev. Corr  
+ Word     (Intercept)         0.041439       
+          NativeLanguageOther 0.038380 0.742 
+ Subject  (Intercept)         0.215033       
+          Frequency           0.019556 -0.877
+ Residual                     0.169724       </code></pre>
+</div>
+</div>
+<p>We can get the divergence of each level of our grouping factors from the population-level estimates:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ranef</span>(mod_lexdec)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>Subject</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   (Intercept)     Frequency
+A1 -0.06030431 -0.0022251255
+A2 -0.18962004  0.0128083423
+A3 -0.06664595  0.0072151844
+C  -0.09377251  0.0133606863
+D  -0.06141404  0.0077909999
+I  -0.18734788  0.0033222900
+J  -0.25375499  0.0171447631
+K  -0.22563195  0.0147162271
+M1 -0.29229275  0.0244231510
+M2  0.25110977 -0.0308968328
+P   0.08034419 -0.0165141417
+R1 -0.14261330  0.0203393705
+R2  0.12464130 -0.0015903453
+R3  0.04157428 -0.0002952847
+S   0.03561165 -0.0028669061
+T1  0.02619380 -0.0030887838
+T2  0.52058557 -0.0316672952
+V   0.17933015 -0.0055399270
+W1 -0.13602827  0.0104647912
+W2  0.12954541 -0.0049044182
+Z   0.32048987 -0.0319967457</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">head</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ranef</span>(mod_lexdec)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>Word, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           (Intercept) NativeLanguageOther
+almond     0.018780910         0.026225728
+ant       -0.022568074        -0.024627285
+apple     -0.040907427        -0.035793135
+apricot   -0.032899686        -0.033362009
+asparagus  0.023935099         0.013473767
+avocado   -0.017600540        -0.014486640
+banana    -0.036796340        -0.046064766
+bat       -0.016603440        -0.015256600
+beaver     0.003163019         0.005906525
+bee       -0.026069500        -0.023041857</code></pre>
+</div>
+</div>
+<p>I’ve printed just the first 10 words to avoid printing all 79. Notice the values consist of a mix of positive and negative values. This is because the population-level estimate (i.e., the fixed effects) lies in the middle of all the observations. These are the <em>deviances</em>, i.e., how each participant’s or word’s fitted intercept or slope value deviates from the population-level value.</p>
+<p>We can also print the actual fitted values:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">coef</span>(mod_lexdec)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>Subject</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   (Intercept)   Frequency NativeLanguageOther
+A1    6.480572 -0.04210381          0.07859106
+A2    6.351256 -0.02707035          0.07859106
+A3    6.474230 -0.03266350          0.07859106
+C     6.447103 -0.02651800          0.07859106
+D     6.479462 -0.03208769          0.07859106
+I     6.353528 -0.03655640          0.07859106
+J     6.287121 -0.02273392          0.07859106
+K     6.315244 -0.02516246          0.07859106
+M1    6.248583 -0.01545554          0.07859106
+M2    6.791986 -0.07077552          0.07859106
+P     6.621220 -0.05639283          0.07859106
+R1    6.398263 -0.01953932          0.07859106
+R2    6.665517 -0.04146903          0.07859106
+R3    6.582450 -0.04017397          0.07859106
+S     6.576488 -0.04274559          0.07859106
+T1    6.567070 -0.04296747          0.07859106
+T2    7.061461 -0.07154598          0.07859106
+V     6.720206 -0.04541861          0.07859106
+W1    6.404848 -0.02941390          0.07859106
+W2    6.670421 -0.04478311          0.07859106
+Z     6.861366 -0.07187543          0.07859106</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">head</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">coef</span>(mod_lexdec)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>Word, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          (Intercept)   Frequency NativeLanguageOther
+almond       6.559657 -0.03987869          0.10481679
+ant          6.518308 -0.03987869          0.05396378
+apple        6.499968 -0.03987869          0.04279793
+apricot      6.507976 -0.03987869          0.04522905
+asparagus    6.564811 -0.03987869          0.09206483
+avocado      6.523275 -0.03987869          0.06410442
+banana       6.504080 -0.03987869          0.03252630
+bat          6.524272 -0.03987869          0.06333446
+beaver       6.544039 -0.03987869          0.08449759
+bee          6.514806 -0.03987869          0.05554921</code></pre>
+</div>
+</div>
+<p>Note that these are now much closer to the fixed effects (population-level values). Importantly, see that the slopes that we did <em>not</em> allow to vary are the same across the relevant grouping factor. That’s because we told our model that these effects do not vary between the levels of the relevant grouping factors (e.g., the effect of <code>NativeLanguage</code> does not vary within participant).</p>
+<section id="visualisng-random-effects" class="level3">
+<h3 class="anchored" data-anchor-id="visualisng-random-effects">Visualisng random effects</h3>
+<p>Finally, the point of this blog post: visualising the random effects.</p>
+<p>Print just the by-subject random effects deviances:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dotplot</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ranef</span>(mod_lexdec))<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>Subject</span></code></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://daniela-palleschi.github.io/blog/posts/dotplot/index_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Print just the by-word random effects:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dotplot</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ranef</span>(mod_lexdec))<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>Word</span></code></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://daniela-palleschi.github.io/blog/posts/dotplot/index_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>In these plots, 0 on the x-axis corresponds to the population-level values. So, the <code>(Intercept)</code>, 0 corresponds to the intercept value in the model coefficients (6.5408759):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">fixef</span>(mod_lexdec)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        (Intercept)           Frequency NativeLanguageOther 
+         6.54087589         -0.03987869          0.07859106 </code></pre>
+</div>
+</div>
+
+
+</section>
+</section>
+
+ ]]></description>
+  <category>linear mixed models</category>
+  <category>data visualisation</category>
+  <guid>https://daniela-palleschi.github.io/blog/posts/dotplot/</guid>
+  <pubDate>Sun, 13 Oct 2024 22:00:00 GMT</pubDate>
+</item>
 <item>
   <title>APA 7 in papaja</title>
   <dc:creator>Daniela Palleschi</dc:creator>
-  <link>https://daniela-palleschi.github.io/blog/posts/papapja7/index.html</link>
+  <link>https://daniela-palleschi.github.io/blog/posts/papapja7/</link>
   <description><![CDATA[ 
+
 
 
 
@@ -310,7 +714,7 @@ font-style: inherit;">---</span></span></code></pre></div>
  ]]></description>
   <category>reproducibility</category>
   <category>writing</category>
-  <guid>https://daniela-palleschi.github.io/blog/posts/papapja7/index.html</guid>
+  <guid>https://daniela-palleschi.github.io/blog/posts/papapja7/</guid>
   <pubDate>Sun, 18 Feb 2024 23:00:00 GMT</pubDate>
 </item>
 </channel>
