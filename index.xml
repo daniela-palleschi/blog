@@ -24,27 +24,37 @@
 <p>This blog post goes over how to produce visualisations of by-grouping factor (e.g., by-participant) varying intercepts and slopes.</p>
 <p>Required packages for reproducible example:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1">pacman<span class="sc" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">## install 'pacman' if you don't have it</span></span>
+<span id="cb1-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># install.packages("pacman")</span></span>
+<span id="cb1-3"></span>
+<span id="cb1-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># p_load(): load or install all listed CRAN packages</span></span>
+<span id="cb1-5">pacman<span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">p_load</span>(</span>
-<span id="cb1-2">  languageR, <span class="co" style="color: #5E5E5E;
+<span id="cb1-6">  languageR, <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># for the example data</span></span>
-<span id="cb1-3">  dplyr, <span class="co" style="color: #5E5E5E;
+<span id="cb1-7">  dplyr, <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># summarising our data</span></span>
-<span id="cb1-4">  janitor, <span class="co" style="color: #5E5E5E;
+<span id="cb1-8">  janitor, <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># for summarising our data</span></span>
-<span id="cb1-5">  lme4, <span class="co" style="color: #5E5E5E;
+<span id="cb1-9">  lme4, <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># fitting our model</span></span>
-<span id="cb1-6">  lattice <span class="co" style="color: #5E5E5E;
+<span id="cb1-10">  lattice <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># for the caterpillar plots</span></span>
-<span id="cb1-7">)</span></code></pre></div>
+<span id="cb1-11">)</span></code></pre></div>
 </div>
 <section id="load-repeated-measures-data" class="level2">
 <h2 class="anchored" data-anchor-id="load-repeated-measures-data">Load repeated measures data</h2>
@@ -56,6 +66,7 @@ font-style: inherit;">&lt;-</span> languageR<span class="sc" style="color: #5E5E
 background-color: null;
 font-style: inherit;">::</span>lexdec</span></code></pre></div>
 </div>
+<p>Check out the variable names:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
 background-color: null;
@@ -70,6 +81,7 @@ font-style: inherit;">names</span>(df_lexdec)</span></code></pre></div>
 [25] "BNCc"           "BNCd"           "BNCcRatio"      "BNCdRatio"     </code></pre>
 </div>
 </div>
+<p>Let’s look at the first few rows of some selected columns:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="fu" style="color: #4758AB;
 background-color: null;
@@ -94,6 +106,7 @@ font-style: inherit;">9</span>)])</span></code></pre></div>
 6      A1 6.180017    33   F        English blackberry</code></pre>
 </div>
 </div>
+<p>How many participants?</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="fu" style="color: #4758AB;
 background-color: null;
@@ -106,19 +119,33 @@ font-style: inherit;">$</span>Subject))</span></code></pre></div>
 <pre><code>[1] 21</code></pre>
 </div>
 </div>
-<p>There are 21 participants in this dataset.</p>
+<p>There are 21 participants in this dataset. How many unique words were there?</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1">df_lexdec <span class="sc" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unique</span>(df_lexdec<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>Word))</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 79</code></pre>
+</div>
+</div>
+<p>There are 79 words.</p>
+<p>How many observations (rows) per participant?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1">df_lexdec <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb9-2">  dplyr<span class="sc" style="color: #5E5E5E;
+<span id="cb11-2">  dplyr<span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">count</span>(Subject) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb9-3">  <span class="fu" style="color: #4758AB;
+<span id="cb11-3">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">count</span>(n, <span class="at" style="color: #657422;
 background-color: null;
@@ -130,16 +157,33 @@ font-style: inherit;">"Subject"</span>)</span></code></pre></div>
 1 79      21</code></pre>
 </div>
 </div>
-<p>We see that all 21 participants had 79 observations, i.e., this was a repeated measures design.</p>
+<p>We see that all 21 participants had 79 observations, i.e., this was a repeated measures design. This is nice and clean, as 79 x 21 equals the number of observations in the dataset (1659):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">79</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">21</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">nrow</span>(df_lexdec)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<p>This means there are no missing values. Wouldn’t have been a problem for our model, but is good to know (and always good to double check).</p>
 </section>
 <section id="mixed-effects-model" class="level2">
 <h2 class="anchored" data-anchor-id="mixed-effects-model">Mixed effects model</h2>
 <p>We’ll ignore a lot of steps for the sake of simplicity here. Let’s fit a linear mixed model with log reaction times (<code>RT</code>) as predicted by word frequency (<code>Frequency</code>), with by-participant (<code>Subject</code>) and by-word (<code>Word</code>) varying intercepts and slopes.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1">mod_lexdec <span class="ot" style="color: #003B4F;
+<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1">mod_lexdec <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span></span>
-<span id="cb11-2">  <span class="fu" style="color: #4758AB;
+<span id="cb15-2">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">lmer</span>(RT <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -148,7 +192,7 @@ background-color: null;
 font-style: inherit;">+</span> NativeLanguage <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb11-3">         (<span class="dv" style="color: #AD0000;
+<span id="cb15-3">         (<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -157,17 +201,17 @@ background-color: null;
 font-style: inherit;">|</span> Subject) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb11-4">         (<span class="dv" style="color: #AD0000;
+<span id="cb15-4">         (<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span> NativeLanguage <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|</span> Word),</span>
-<span id="cb11-5">       <span class="at" style="color: #657422;
+<span id="cb15-5">       <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">data =</span> df_lexdec,</span>
-<span id="cb11-6">       <span class="at" style="color: #657422;
+<span id="cb15-6">       <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">control =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -176,13 +220,13 @@ background-color: null;
 font-style: inherit;">optimizer =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"bobyqa"</span>)</span>
-<span id="cb11-7">       )</span></code></pre></div>
+<span id="cb15-7">       )</span></code></pre></div>
 </div>
 <p>First: note we have a single varying slope for participant and word each. The effect of <code>Frequency</code> is allowed to vary between participants because each participant contributed data points for words of different frequencies (presumably). The effect of <code>NativeLanguage</code> is allowed to vary between words because we have data points from different NativeLanguage levels (English, Other) for each word (presumably). Importantly, <code>NativeLanguage</code> does not vary within a single subject, nor does word frequency vary within a single word.</p>
 <section id="inspect-model" class="level3">
 <h3 class="anchored" data-anchor-id="inspect-model">Inspect model</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><span class="fu" style="color: #4758AB;
+<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">summary</span>(mod_lexdec)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -226,7 +270,7 @@ NtvLnggOthr -0.433  0.103</code></pre>
 <h2 class="anchored" data-anchor-id="random-effects">Random effects</h2>
 <p>We can inspect just the random effects and the variance-covariance matrix:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><span class="fu" style="color: #4758AB;
+<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">VarCorr</span>(mod_lexdec)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -240,7 +284,7 @@ font-style: inherit;">VarCorr</span>(mod_lexdec)</span></code></pre></div>
 </div>
 <p>We can get the divergence of each level of our grouping factors from the population-level estimates:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><span class="fu" style="color: #4758AB;
+<div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">ranef</span>(mod_lexdec)<span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -271,7 +315,7 @@ Z   0.32048987 -0.0319967457</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><span class="fu" style="color: #4758AB;
+<div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">head</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
@@ -299,7 +343,7 @@ bee       -0.026069500        -0.023041857</code></pre>
 <p>I’ve printed just the first 10 words to avoid printing all 79. Notice the values consist of a mix of positive and negative values. This is because the population-level estimate (i.e., the fixed effects) lies in the middle of all the observations. These are the <em>deviances</em>, i.e., how each participant’s or word’s fitted intercept or slope value deviates from the population-level value.</p>
 <p>We can also print the actual fitted values:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><span class="fu" style="color: #4758AB;
+<div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">coef</span>(mod_lexdec)<span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -330,7 +374,7 @@ Z     6.861366 -0.07187543          0.07859106</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><span class="fu" style="color: #4758AB;
+<div class="sourceCode cell-code" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">head</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
@@ -361,7 +405,7 @@ bee          6.514806 -0.03987869          0.05554921</code></pre>
 <p>Finally, the point of this blog post: visualising the random effects.</p>
 <p>Print just the by-subject random effects deviances:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><span class="fu" style="color: #4758AB;
+<div class="sourceCode cell-code" id="cb28" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">dotplot</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
@@ -371,14 +415,14 @@ font-style: inherit;">$</span>Subject</span></code></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="https://daniela-palleschi.github.io/blog/posts/dotplot/index_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="https://daniela-palleschi.github.io/blog/posts/dotplot/index_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>Print just the by-word random effects:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><span class="fu" style="color: #4758AB;
+<div class="sourceCode cell-code" id="cb29" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">dotplot</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
@@ -388,14 +432,14 @@ font-style: inherit;">$</span>Word</span></code></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="https://daniela-palleschi.github.io/blog/posts/dotplot/index_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="https://daniela-palleschi.github.io/blog/posts/dotplot/index_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>In these plots, 0 on the x-axis corresponds to the population-level values. So, the <code>(Intercept)</code>, 0 corresponds to the intercept value in the model coefficients (6.5408759):</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><span class="fu" style="color: #4758AB;
+<div class="sourceCode cell-code" id="cb30" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">fixef</span>(mod_lexdec)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -403,9 +447,161 @@ font-style: inherit;">fixef</span>(mod_lexdec)</span></code></pre></div>
          6.54087589         -0.03987869          0.07859106 </code></pre>
 </div>
 </div>
-
-
 </section>
+</section>
+<section id="caterpillar-plot-with-ggplot2" class="level2">
+<h2 class="anchored" data-anchor-id="caterpillar-plot-with-ggplot2">Caterpillar plot with <code>ggplot2</code></h2>
+<p>We could also produce these plots by hand. For this we’ll use the <code>broom.mixed</code> package.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1">pacman<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">p_load</span>(</span>
+<span id="cb32-2">  ggplot2,</span>
+<span id="cb32-3">  broom.mixed</span>
+<span id="cb32-4">)</span></code></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1">fig_res_dev <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span></span>
+<span id="cb33-2">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># produce tidy table of random effects</span></span>
+<span id="cb33-3">  broom.mixed<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tidy</span>(mod_lexdec, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">effects =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ran_vals"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">conf.int =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb33-4">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># by-Subject only</span></span>
+<span id="cb33-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(group <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Subject"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb33-6">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># begin plotting</span></span>
+<span id="cb33-7">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>() <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb33-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> estimate, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">reorder</span>(level, estimate))  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb33-9">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"By-participant intercept deviance (log RTs)"</span>,</span>
+<span id="cb33-10">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Participant ID"</span>,</span>
+<span id="cb33-11">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Deviance (log ms)"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb33-12">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_vline</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xintercept =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"red"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linetype =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dashed"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb33-13">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_point</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"blue"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb33-14">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_errorbar</span>(</span>
+<span id="cb33-15">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xmin =</span> conf.low,</span>
+<span id="cb33-16">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xmax =</span> conf.high)</span>
+<span id="cb33-17">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb33-18">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">facet_grid</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>term) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb33-19">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_bw</span>()</span></code></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1">fig_res_dev</span></code></pre></div>
+<div class="cell-output-display">
+<div id="fig-ggplot2_ranef" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ggplot2_ranef-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://daniela-palleschi.github.io/blog/posts/dotplot/index_files/figure-html/fig-ggplot2_ranef-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ggplot2_ranef-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Caterpillar plot of by-participant varying intercepts and slopes produced with <code>broom.mixed::tidy()</code> and <code>ggplot2</code>
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+
+
 </section>
 
  ]]></description>
