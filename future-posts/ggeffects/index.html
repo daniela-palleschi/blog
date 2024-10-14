@@ -108,7 +108,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed fullcontent">
+<body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -155,13 +155,36 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#manually-calculating-predictions" id="toc-manually-calculating-predictions" class="nav-link active" data-scroll-target="#manually-calculating-predictions">Manually calculating predictions</a>
+  <ul class="collapse">
+  <li><a href="#fit-model" id="toc-fit-model" class="nav-link" data-scroll-target="#fit-model">Fit model</a></li>
+  <li><a href="#calculate-predictions" id="toc-calculate-predictions" class="nav-link" data-scroll-target="#calculate-predictions">Calculate predictions</a></li>
+  </ul></li>
+  <li><a href="#effect-of-transformations-contrasts-and-standardizing" id="toc-effect-of-transformations-contrasts-and-standardizing" class="nav-link" data-scroll-target="#effect-of-transformations-contrasts-and-standardizing">Effect of transformations: contrasts and standardizing</a>
+  <ul class="collapse">
+  <li><a href="#centre-predictors" id="toc-centre-predictors" class="nav-link" data-scroll-target="#centre-predictors">Centre predictors</a></li>
+  <li><a href="#fit-model-1" id="toc-fit-model-1" class="nav-link" data-scroll-target="#fit-model-1">Fit model</a></li>
+  <li><a href="#manual-predictions" id="toc-manual-predictions" class="nav-link" data-scroll-target="#manual-predictions">Manual predictions</a></li>
+  </ul></li>
+  <li><a href="#ggeffects-package" id="toc-ggeffects-package" class="nav-link" data-scroll-target="#ggeffects-package"><code>ggeffects</code> Package</a>
+  <ul class="collapse">
+  <li><a href="#difference-between-ggeffect-ggpredict-ggemmeans" id="toc-difference-between-ggeffect-ggpredict-ggemmeans" class="nav-link" data-scroll-target="#difference-between-ggeffect-ggpredict-ggemmeans">Difference between <code>ggeffect()</code>, <code>ggpredict()</code>, <code>ggemmeans()</code></a></li>
+  </ul></li>
+  <li><a href="#plotting-predictions" id="toc-plotting-predictions" class="nav-link" data-scroll-target="#plotting-predictions">Plotting predictions</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">ggeffects Package</h1>
+<div class="quarto-title-block"><div><h1 class="title">ggeffects Package</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
   <div class="quarto-categories">
     <div class="quarto-category">regression</div>
     <div class="quarto-category">predictions</div>
@@ -851,6 +874,8 @@ t -0.5 -0.5 -0.5 -0.5</code></pre>
 <h1>Plotting predictions</h1>
 
 
+<!-- -->
+
 </section>
 
 </main> <!-- /main -->
@@ -933,6 +958,57 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
       var filterRegex = new RegExp("https:\/\/daniela-palleschi\.github\.io\/blog\/");
@@ -1262,7 +1338,369 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
   }
 });
-</script>
+</script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb93" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb93-2"><a href="#cb93-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "ggeffects Package"</span></span>
+<span id="cb93-3"><a href="#cb93-3" aria-hidden="true" tabindex="-1"></a><span class="an">description:</span><span class="co"> "How to generate model predictions"</span></span>
+<span id="cb93-4"><a href="#cb93-4" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "Daniela Palleschi"</span></span>
+<span id="cb93-5"><a href="#cb93-5" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> "09/05/2023"</span></span>
+<span id="cb93-6"><a href="#cb93-6" aria-hidden="true" tabindex="-1"></a><span class="an">date-modified:</span><span class="co"> last-modified</span></span>
+<span id="cb93-7"><a href="#cb93-7" aria-hidden="true" tabindex="-1"></a><span class="an">categories:</span><span class="co"> [regression, predictions, reproducibility]</span></span>
+<span id="cb93-8"><a href="#cb93-8" aria-hidden="true" tabindex="-1"></a><span class="an">draft:</span><span class="co"> false</span></span>
+<span id="cb93-9"><a href="#cb93-9" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb93-10"><a href="#cb93-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-11"><a href="#cb93-11" aria-hidden="true" tabindex="-1"></a>When reporting our models, it can be helpful for our audience (and ourselves) to produce model predicted values per condition/values of a continuous predictor. Using the equation of a line, we can manually generate such predictions as long as we know:</span>
+<span id="cb93-12"><a href="#cb93-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-13"><a href="#cb93-13" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>our intercept estimate</span>
+<span id="cb93-14"><a href="#cb93-14" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>our predictor estimate(s)</span>
+<span id="cb93-15"><a href="#cb93-15" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>our coding scheme for categorical predictors</span>
+<span id="cb93-16"><a href="#cb93-16" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>how transformations translate to raw values of continuous predictors</span>
+<span id="cb93-17"><a href="#cb93-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-18"><a href="#cb93-18" aria-hidden="true" tabindex="-1"></a>There are also useful packages that automate this process for us, which can be especially useful with more complex models such as mixed effects models.</span>
+<span id="cb93-19"><a href="#cb93-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-20"><a href="#cb93-20" aria-hidden="true" tabindex="-1"></a>We'll see here how to manually compute the fitted values per condition, and how these compare to functions from the <span class="in">`ggeffects`</span> package.</span>
+<span id="cb93-21"><a href="#cb93-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-22"><a href="#cb93-22" aria-hidden="true" tabindex="-1"></a><span class="fu"># Manually calculating predictions</span></span>
+<span id="cb93-23"><a href="#cb93-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-24"><a href="#cb93-24" aria-hidden="true" tabindex="-1"></a>We have to start by fitting a model. Let's use</span>
+<span id="cb93-25"><a href="#cb93-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-28"><a href="#cb93-28" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-29"><a href="#cb93-29" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(</span>
+<span id="cb93-30"><a href="#cb93-30" aria-hidden="true" tabindex="-1"></a>  languageR,</span>
+<span id="cb93-31"><a href="#cb93-31" aria-hidden="true" tabindex="-1"></a>  lme4,</span>
+<span id="cb93-32"><a href="#cb93-32" aria-hidden="true" tabindex="-1"></a>  dplyr,</span>
+<span id="cb93-33"><a href="#cb93-33" aria-hidden="true" tabindex="-1"></a>  tidyr,</span>
+<span id="cb93-34"><a href="#cb93-34" aria-hidden="true" tabindex="-1"></a>  janitor,</span>
+<span id="cb93-35"><a href="#cb93-35" aria-hidden="true" tabindex="-1"></a>  broom.mixed,</span>
+<span id="cb93-36"><a href="#cb93-36" aria-hidden="true" tabindex="-1"></a>  ggeffects</span>
+<span id="cb93-37"><a href="#cb93-37" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb93-38"><a href="#cb93-38" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-39"><a href="#cb93-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-40"><a href="#cb93-40" aria-hidden="true" tabindex="-1"></a>Load the <span class="in">`dative`</span> dataset.</span>
+<span id="cb93-41"><a href="#cb93-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-44"><a href="#cb93-44" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-45"><a href="#cb93-45" aria-hidden="true" tabindex="-1"></a>df_dative <span class="ot">&lt;-</span> dative <span class="sc">|&gt;</span> </span>
+<span id="cb93-46"><a href="#cb93-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">clean_names</span>()</span>
+<span id="cb93-47"><a href="#cb93-47" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-48"><a href="#cb93-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-51"><a href="#cb93-51" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-52"><a href="#cb93-52" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(df_dative)</span>
+<span id="cb93-53"><a href="#cb93-53" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-54"><a href="#cb93-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-55"><a href="#cb93-55" aria-hidden="true" tabindex="-1"></a>First off, we see there are 903 observations (out of <span class="in">`r nrow(df_dative)`</span>) where <span class="in">`speaker`</span> information is not provided. For simplicity's sake, let's remove these observations. We'll use the <span class="in">`drop_na()`</span> function from <span class="in">`tidyr`</span>.</span>
+<span id="cb93-56"><a href="#cb93-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-59"><a href="#cb93-59" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-60"><a href="#cb93-60" aria-hidden="true" tabindex="-1"></a>df_dative <span class="ot">&lt;-</span> df_dative <span class="sc">|&gt;</span> </span>
+<span id="cb93-61"><a href="#cb93-61" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(speaker)</span>
+<span id="cb93-62"><a href="#cb93-62" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-63"><a href="#cb93-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-64"><a href="#cb93-64" aria-hidden="true" tabindex="-1"></a>Now let's take a peak.</span>
+<span id="cb93-65"><a href="#cb93-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-68"><a href="#cb93-68" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-69"><a href="#cb93-69" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df_dative)</span>
+<span id="cb93-70"><a href="#cb93-70" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-71"><a href="#cb93-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-72"><a href="#cb93-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-73"><a href="#cb93-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-76"><a href="#cb93-76" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-77"><a href="#cb93-77" aria-hidden="true" tabindex="-1"></a><span class="fu">contrasts</span>(df_dative<span class="sc">$</span>semantic_class)</span>
+<span id="cb93-78"><a href="#cb93-78" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(df_dative<span class="sc">$</span>semantic_class)</span>
+<span id="cb93-79"><a href="#cb93-79" aria-hidden="true" tabindex="-1"></a><span class="fu">levels</span>(df_dative<span class="sc">$</span>modality)</span>
+<span id="cb93-80"><a href="#cb93-80" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-81"><a href="#cb93-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-82"><a href="#cb93-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-83"><a href="#cb93-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-84"><a href="#cb93-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-85"><a href="#cb93-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-86"><a href="#cb93-86" aria-hidden="true" tabindex="-1"></a><span class="fu">## Fit model</span></span>
+<span id="cb93-87"><a href="#cb93-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-88"><a href="#cb93-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-91"><a href="#cb93-91" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-92"><a href="#cb93-92" aria-hidden="true" tabindex="-1"></a>glmer_dative <span class="ot">&lt;-</span> </span>
+<span id="cb93-93"><a href="#cb93-93" aria-hidden="true" tabindex="-1"></a>  <span class="fu">glmer</span>(</span>
+<span id="cb93-94"><a href="#cb93-94" aria-hidden="true" tabindex="-1"></a>  realization_of_recipient <span class="sc">~</span> semantic_class <span class="sc">+</span> length_of_recipient <span class="sc">+</span></span>
+<span id="cb93-95"><a href="#cb93-95" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">1</span> <span class="sc">|</span> verb),</span>
+<span id="cb93-96"><a href="#cb93-96" aria-hidden="true" tabindex="-1"></a>  <span class="co"># control = glmerControl(optimizer = "optimx", optCtrl = list(method = "nlminb")),</span></span>
+<span id="cb93-97"><a href="#cb93-97" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> df_dative,</span>
+<span id="cb93-98"><a href="#cb93-98" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> <span class="st">"binomial"</span></span>
+<span id="cb93-99"><a href="#cb93-99" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb93-100"><a href="#cb93-100" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-101"><a href="#cb93-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-104"><a href="#cb93-104" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-105"><a href="#cb93-105" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(glmer_dative)</span>
+<span id="cb93-106"><a href="#cb93-106" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-107"><a href="#cb93-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-108"><a href="#cb93-108" aria-hidden="true" tabindex="-1"></a><span class="fu">## Calculate predictions</span></span>
+<span id="cb93-109"><a href="#cb93-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-110"><a href="#cb93-110" aria-hidden="true" tabindex="-1"></a>First, remind ourselves of our contrasts</span>
+<span id="cb93-111"><a href="#cb93-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-114"><a href="#cb93-114" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-115"><a href="#cb93-115" aria-hidden="true" tabindex="-1"></a><span class="fu">contrasts</span>(df_dative<span class="sc">$</span>semantic_class)</span>
+<span id="cb93-116"><a href="#cb93-116" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-117"><a href="#cb93-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-118"><a href="#cb93-118" aria-hidden="true" tabindex="-1"></a>Grab our estimates.</span>
+<span id="cb93-119"><a href="#cb93-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-122"><a href="#cb93-122" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-123"><a href="#cb93-123" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(glmer_dative)</span>
+<span id="cb93-124"><a href="#cb93-124" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-125"><a href="#cb93-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-126"><a href="#cb93-126" aria-hidden="true" tabindex="-1"></a>Save them as objects to make things a little more transparent.</span>
+<span id="cb93-127"><a href="#cb93-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-130"><a href="#cb93-130" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-131"><a href="#cb93-131" aria-hidden="true" tabindex="-1"></a>intercept <span class="ot">&lt;-</span></span>
+<span id="cb93-132"><a href="#cb93-132" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>(glmer_dative) <span class="sc">|&gt;</span> </span>
+<span id="cb93-133"><a href="#cb93-133" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"(Intercept)"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb93-134"><a href="#cb93-134" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(estimate)</span>
+<span id="cb93-135"><a href="#cb93-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-136"><a href="#cb93-136" aria-hidden="true" tabindex="-1"></a>sem_class_a_c <span class="ot">&lt;-</span></span>
+<span id="cb93-137"><a href="#cb93-137" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>(glmer_dative) <span class="sc">|&gt;</span> </span>
+<span id="cb93-138"><a href="#cb93-138" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"semantic_classc"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb93-139"><a href="#cb93-139" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(estimate)</span>
+<span id="cb93-140"><a href="#cb93-140" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-141"><a href="#cb93-141" aria-hidden="true" tabindex="-1"></a>sem_class_a_f <span class="ot">&lt;-</span></span>
+<span id="cb93-142"><a href="#cb93-142" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>(glmer_dative) <span class="sc">|&gt;</span> </span>
+<span id="cb93-143"><a href="#cb93-143" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"semantic_classf"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb93-144"><a href="#cb93-144" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(estimate)</span>
+<span id="cb93-145"><a href="#cb93-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-146"><a href="#cb93-146" aria-hidden="true" tabindex="-1"></a>sem_class_a_p <span class="ot">&lt;-</span></span>
+<span id="cb93-147"><a href="#cb93-147" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>(glmer_dative) <span class="sc">|&gt;</span> </span>
+<span id="cb93-148"><a href="#cb93-148" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"semantic_classp"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb93-149"><a href="#cb93-149" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(estimate)</span>
+<span id="cb93-150"><a href="#cb93-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-151"><a href="#cb93-151" aria-hidden="true" tabindex="-1"></a>sem_class_a_t <span class="ot">&lt;-</span></span>
+<span id="cb93-152"><a href="#cb93-152" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>(glmer_dative) <span class="sc">|&gt;</span> </span>
+<span id="cb93-153"><a href="#cb93-153" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"semantic_classt"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb93-154"><a href="#cb93-154" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(estimate)</span>
+<span id="cb93-155"><a href="#cb93-155" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-156"><a href="#cb93-156" aria-hidden="true" tabindex="-1"></a>length_recip <span class="ot">&lt;-</span> </span>
+<span id="cb93-157"><a href="#cb93-157" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>(glmer_dative) <span class="sc">|&gt;</span> </span>
+<span id="cb93-158"><a href="#cb93-158" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"length_of_recipient"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb93-159"><a href="#cb93-159" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(estimate)</span>
+<span id="cb93-160"><a href="#cb93-160" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-161"><a href="#cb93-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-162"><a href="#cb93-162" aria-hidden="true" tabindex="-1"></a>Now we can manually calculate:</span>
+<span id="cb93-163"><a href="#cb93-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-166"><a href="#cb93-166" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-167"><a href="#cb93-167" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">plogis</span>(intercept <span class="sc">+</span> sem_class_a_c<span class="sc">*</span><span class="dv">0</span> <span class="sc">+</span> length_recip<span class="sc">*</span><span class="dv">1</span>)</span>
+<span id="cb93-168"><a href="#cb93-168" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-169"><a href="#cb93-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-172"><a href="#cb93-172" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-173"><a href="#cb93-173" aria-hidden="true" tabindex="-1"></a>c <span class="ot">&lt;-</span> <span class="fu">plogis</span>(intercept <span class="sc">+</span> sem_class_a_c<span class="sc">*</span><span class="dv">1</span> <span class="sc">+</span> length_recip<span class="sc">*</span><span class="dv">1</span>)</span>
+<span id="cb93-174"><a href="#cb93-174" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-175"><a href="#cb93-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-178"><a href="#cb93-178" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-179"><a href="#cb93-179" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="fu">plogis</span>(intercept <span class="sc">+</span> sem_class_a_f<span class="sc">*</span><span class="dv">1</span> <span class="sc">+</span> length_recip<span class="sc">*</span><span class="dv">1</span>)</span>
+<span id="cb93-180"><a href="#cb93-180" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-181"><a href="#cb93-181" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-184"><a href="#cb93-184" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-185"><a href="#cb93-185" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">plogis</span>(intercept <span class="sc">+</span> sem_class_a_p<span class="sc">*</span><span class="dv">1</span> <span class="sc">+</span> length_recip<span class="sc">*</span><span class="dv">1</span>)</span>
+<span id="cb93-186"><a href="#cb93-186" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-187"><a href="#cb93-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-190"><a href="#cb93-190" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-191"><a href="#cb93-191" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> <span class="fu">plogis</span>(intercept <span class="sc">+</span> sem_class_a_t<span class="sc">*</span><span class="dv">1</span> <span class="sc">+</span> length_recip<span class="sc">*</span><span class="dv">1</span>)</span>
+<span id="cb93-192"><a href="#cb93-192" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-193"><a href="#cb93-193" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-196"><a href="#cb93-196" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-197"><a href="#cb93-197" aria-hidden="true" tabindex="-1"></a>a</span>
+<span id="cb93-198"><a href="#cb93-198" aria-hidden="true" tabindex="-1"></a>c</span>
+<span id="cb93-199"><a href="#cb93-199" aria-hidden="true" tabindex="-1"></a>f</span>
+<span id="cb93-200"><a href="#cb93-200" aria-hidden="true" tabindex="-1"></a>p</span>
+<span id="cb93-201"><a href="#cb93-201" aria-hidden="true" tabindex="-1"></a>t</span>
+<span id="cb93-202"><a href="#cb93-202" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-203"><a href="#cb93-203" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-204"><a href="#cb93-204" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-207"><a href="#cb93-207" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-208"><a href="#cb93-208" aria-hidden="true" tabindex="-1"></a>ggeffects<span class="sc">::</span><span class="fu">ggpredict</span>(glmer_dative, <span class="at">terms =</span> <span class="st">"semantic_class"</span>)</span>
+<span id="cb93-209"><a href="#cb93-209" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-210"><a href="#cb93-210" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-211"><a href="#cb93-211" aria-hidden="true" tabindex="-1"></a>This matches our manual calculations.</span>
+<span id="cb93-212"><a href="#cb93-212" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-215"><a href="#cb93-215" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-216"><a href="#cb93-216" aria-hidden="true" tabindex="-1"></a>ggeffects<span class="sc">::</span><span class="fu">ggeffect</span>(glmer_dative, <span class="at">terms =</span> <span class="st">"semantic_class"</span>)</span>
+<span id="cb93-217"><a href="#cb93-217" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-218"><a href="#cb93-218" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-219"><a href="#cb93-219" aria-hidden="true" tabindex="-1"></a>This doesn't...why is that?</span>
+<span id="cb93-220"><a href="#cb93-220" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-223"><a href="#cb93-223" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-224"><a href="#cb93-224" aria-hidden="true" tabindex="-1"></a>ggeffects<span class="sc">::</span><span class="fu">ggemmeans</span>(glmer_dative, <span class="at">terms =</span> <span class="st">"semantic_class"</span>)</span>
+<span id="cb93-225"><a href="#cb93-225" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-226"><a href="#cb93-226" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-227"><a href="#cb93-227" aria-hidden="true" tabindex="-1"></a>This also matches our predictions.</span>
+<span id="cb93-228"><a href="#cb93-228" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-229"><a href="#cb93-229" aria-hidden="true" tabindex="-1"></a><span class="fu"># Effect of transformations: contrasts and standardizing</span></span>
+<span id="cb93-230"><a href="#cb93-230" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-231"><a href="#cb93-231" aria-hidden="true" tabindex="-1"></a><span class="fu">## Centre predictors</span></span>
+<span id="cb93-232"><a href="#cb93-232" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-235"><a href="#cb93-235" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-236"><a href="#cb93-236" aria-hidden="true" tabindex="-1"></a><span class="fu">contrasts</span>(df_dative<span class="sc">$</span>semantic_class)</span>
+<span id="cb93-237"><a href="#cb93-237" aria-hidden="true" tabindex="-1"></a><span class="fu">contrasts</span>(df_dative<span class="sc">$</span>semantic_class) <span class="ot">&lt;-</span> <span class="fu">contr.sum</span>(<span class="dv">5</span>)<span class="sc">/</span><span class="dv">2</span></span>
+<span id="cb93-238"><a href="#cb93-238" aria-hidden="true" tabindex="-1"></a><span class="fu">contrasts</span>(df_dative<span class="sc">$</span>semantic_class)</span>
+<span id="cb93-239"><a href="#cb93-239" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-240"><a href="#cb93-240" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-243"><a href="#cb93-243" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-244"><a href="#cb93-244" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(df_dative<span class="sc">$</span>length_of_recipient)</span>
+<span id="cb93-245"><a href="#cb93-245" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(df_dative<span class="sc">$</span>length_of_recipient)</span>
+<span id="cb93-246"><a href="#cb93-246" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-247"><a href="#cb93-247" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-250"><a href="#cb93-250" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-251"><a href="#cb93-251" aria-hidden="true" tabindex="-1"></a>df_dative <span class="ot">&lt;-</span></span>
+<span id="cb93-252"><a href="#cb93-252" aria-hidden="true" tabindex="-1"></a>  df_dative <span class="sc">|&gt;</span> </span>
+<span id="cb93-253"><a href="#cb93-253" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">length_of_recipient_z =</span> <span class="fu">scale</span>(df_dative<span class="sc">$</span>length_of_recipient))</span>
+<span id="cb93-254"><a href="#cb93-254" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-255"><a href="#cb93-255" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-258"><a href="#cb93-258" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-259"><a href="#cb93-259" aria-hidden="true" tabindex="-1"></a>df_dative <span class="sc">|&gt;</span> </span>
+<span id="cb93-260"><a href="#cb93-260" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(length_of_recipient, length_of_recipient_z) <span class="sc">|&gt;</span> </span>
+<span id="cb93-261"><a href="#cb93-261" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>()</span>
+<span id="cb93-262"><a href="#cb93-262" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-263"><a href="#cb93-263" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-264"><a href="#cb93-264" aria-hidden="true" tabindex="-1"></a><span class="fu">## Fit model</span></span>
+<span id="cb93-265"><a href="#cb93-265" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-266"><a href="#cb93-266" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-267"><a href="#cb93-267" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-270"><a href="#cb93-270" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-271"><a href="#cb93-271" aria-hidden="true" tabindex="-1"></a>glmer_dative_c <span class="ot">&lt;-</span> </span>
+<span id="cb93-272"><a href="#cb93-272" aria-hidden="true" tabindex="-1"></a>  <span class="fu">glmer</span>(</span>
+<span id="cb93-273"><a href="#cb93-273" aria-hidden="true" tabindex="-1"></a>  realization_of_recipient <span class="sc">~</span> semantic_class <span class="sc">+</span> length_of_recipient <span class="sc">+</span></span>
+<span id="cb93-274"><a href="#cb93-274" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">1</span> <span class="sc">|</span> verb),</span>
+<span id="cb93-275"><a href="#cb93-275" aria-hidden="true" tabindex="-1"></a>  <span class="co"># control = glmerControl(optimizer = "optimx", optCtrl = list(method = "nlminb")),</span></span>
+<span id="cb93-276"><a href="#cb93-276" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> df_dative,</span>
+<span id="cb93-277"><a href="#cb93-277" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> <span class="st">"binomial"</span></span>
+<span id="cb93-278"><a href="#cb93-278" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb93-279"><a href="#cb93-279" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-280"><a href="#cb93-280" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-283"><a href="#cb93-283" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-284"><a href="#cb93-284" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(glmer_dative_c)</span>
+<span id="cb93-285"><a href="#cb93-285" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-286"><a href="#cb93-286" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-289"><a href="#cb93-289" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-290"><a href="#cb93-290" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(glmer_dative_c)</span>
+<span id="cb93-291"><a href="#cb93-291" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-292"><a href="#cb93-292" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-293"><a href="#cb93-293" aria-hidden="true" tabindex="-1"></a>Our estimates have changed.</span>
+<span id="cb93-294"><a href="#cb93-294" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-295"><a href="#cb93-295" aria-hidden="true" tabindex="-1"></a>Let's first take a look at the predictions computed by the <span class="in">`ggeffects`</span> package.</span>
+<span id="cb93-296"><a href="#cb93-296" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-299"><a href="#cb93-299" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-300"><a href="#cb93-300" aria-hidden="true" tabindex="-1"></a><span class="fu">ggpredict</span>(glmer_dative_c, <span class="at">term =</span> <span class="st">"semantic_class"</span>)</span>
+<span id="cb93-301"><a href="#cb93-301" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-302"><a href="#cb93-302" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-303"><a href="#cb93-303" aria-hidden="true" tabindex="-1"></a>These are the same as before.</span>
+<span id="cb93-304"><a href="#cb93-304" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-307"><a href="#cb93-307" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-308"><a href="#cb93-308" aria-hidden="true" tabindex="-1"></a><span class="fu">ggeffect</span>(glmer_dative_c, <span class="at">term =</span> <span class="st">"semantic_class"</span>)</span>
+<span id="cb93-309"><a href="#cb93-309" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-310"><a href="#cb93-310" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-311"><a href="#cb93-311" aria-hidden="true" tabindex="-1"></a>These are also the same as before.</span>
+<span id="cb93-312"><a href="#cb93-312" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-315"><a href="#cb93-315" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-316"><a href="#cb93-316" aria-hidden="true" tabindex="-1"></a><span class="fu">ggemmeans</span>(glmer_dative_c, <span class="at">term =</span> <span class="st">"semantic_class"</span>)</span>
+<span id="cb93-317"><a href="#cb93-317" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-318"><a href="#cb93-318" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-319"><a href="#cb93-319" aria-hidden="true" tabindex="-1"></a>These are again the same as before, and match those computed by <span class="in">`ggpredict()`</span>.</span>
+<span id="cb93-320"><a href="#cb93-320" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-321"><a href="#cb93-321" aria-hidden="true" tabindex="-1"></a>So what's going on here? To understand it better, let's first repeat the manual calculations using the model estimates.</span>
+<span id="cb93-322"><a href="#cb93-322" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-323"><a href="#cb93-323" aria-hidden="true" tabindex="-1"></a><span class="fu">## Manual predictions</span></span>
+<span id="cb93-324"><a href="#cb93-324" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-325"><a href="#cb93-325" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-326"><a href="#cb93-326" aria-hidden="true" tabindex="-1"></a>First, remind ourselves of our contrasts</span>
+<span id="cb93-327"><a href="#cb93-327" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-330"><a href="#cb93-330" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-331"><a href="#cb93-331" aria-hidden="true" tabindex="-1"></a><span class="fu">contrasts</span>(df_dative<span class="sc">$</span>semantic_class)</span>
+<span id="cb93-332"><a href="#cb93-332" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-333"><a href="#cb93-333" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-334"><a href="#cb93-334" aria-hidden="true" tabindex="-1"></a>Grab our estimates.</span>
+<span id="cb93-335"><a href="#cb93-335" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-338"><a href="#cb93-338" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-339"><a href="#cb93-339" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(glmer_dative_c)</span>
+<span id="cb93-340"><a href="#cb93-340" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-341"><a href="#cb93-341" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-342"><a href="#cb93-342" aria-hidden="true" tabindex="-1"></a>Save them as objects to make things a little more transparent.</span>
+<span id="cb93-343"><a href="#cb93-343" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-346"><a href="#cb93-346" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-347"><a href="#cb93-347" aria-hidden="true" tabindex="-1"></a>intercept <span class="ot">&lt;-</span></span>
+<span id="cb93-348"><a href="#cb93-348" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>(glmer_dative_c) <span class="sc">|&gt;</span> </span>
+<span id="cb93-349"><a href="#cb93-349" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"(Intercept)"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb93-350"><a href="#cb93-350" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(estimate)</span>
+<span id="cb93-351"><a href="#cb93-351" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-352"><a href="#cb93-352" aria-hidden="true" tabindex="-1"></a>sem_class_t_a <span class="ot">&lt;-</span></span>
+<span id="cb93-353"><a href="#cb93-353" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>(glmer_dative_c) <span class="sc">|&gt;</span> </span>
+<span id="cb93-354"><a href="#cb93-354" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"semantic_class1"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb93-355"><a href="#cb93-355" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(estimate)</span>
+<span id="cb93-356"><a href="#cb93-356" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-357"><a href="#cb93-357" aria-hidden="true" tabindex="-1"></a>sem_class_t_c <span class="ot">&lt;-</span></span>
+<span id="cb93-358"><a href="#cb93-358" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>(glmer_dative_c) <span class="sc">|&gt;</span> </span>
+<span id="cb93-359"><a href="#cb93-359" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"semantic_class2"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb93-360"><a href="#cb93-360" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(estimate)</span>
+<span id="cb93-361"><a href="#cb93-361" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-362"><a href="#cb93-362" aria-hidden="true" tabindex="-1"></a>sem_class_t_f <span class="ot">&lt;-</span></span>
+<span id="cb93-363"><a href="#cb93-363" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>(glmer_dative_c) <span class="sc">|&gt;</span> </span>
+<span id="cb93-364"><a href="#cb93-364" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"semantic_class3"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb93-365"><a href="#cb93-365" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(estimate)</span>
+<span id="cb93-366"><a href="#cb93-366" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-367"><a href="#cb93-367" aria-hidden="true" tabindex="-1"></a>sem_class_t_p <span class="ot">&lt;-</span></span>
+<span id="cb93-368"><a href="#cb93-368" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>(glmer_dative_c) <span class="sc">|&gt;</span> </span>
+<span id="cb93-369"><a href="#cb93-369" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"semantic_class4"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb93-370"><a href="#cb93-370" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(estimate)</span>
+<span id="cb93-371"><a href="#cb93-371" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-372"><a href="#cb93-372" aria-hidden="true" tabindex="-1"></a>length_recip <span class="ot">&lt;-</span> </span>
+<span id="cb93-373"><a href="#cb93-373" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>(glmer_dative_c) <span class="sc">|&gt;</span> </span>
+<span id="cb93-374"><a href="#cb93-374" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"length_of_recipient"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb93-375"><a href="#cb93-375" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(estimate)</span>
+<span id="cb93-376"><a href="#cb93-376" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-377"><a href="#cb93-377" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-378"><a href="#cb93-378" aria-hidden="true" tabindex="-1"></a>Now we can manually calculate:</span>
+<span id="cb93-379"><a href="#cb93-379" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-382"><a href="#cb93-382" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-383"><a href="#cb93-383" aria-hidden="true" tabindex="-1"></a><span class="co"># t &lt;- </span></span>
+<span id="cb93-384"><a href="#cb93-384" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plogis</span>(intercept <span class="sc">+</span> sem_class_t_a<span class="sc">*</span>(<span class="sc">-</span><span class="fl">0.5</span>))</span>
+<span id="cb93-385"><a href="#cb93-385" aria-hidden="true" tabindex="-1"></a><span class="fu">plogis</span>(intercept <span class="sc">+</span> sem_class_t_p<span class="sc">*</span>(<span class="sc">-</span><span class="fl">0.5</span>))</span>
+<span id="cb93-386"><a href="#cb93-386" aria-hidden="true" tabindex="-1"></a><span class="fu">plogis</span>(intercept <span class="sc">+</span> sem_class_t_f<span class="sc">*</span>(<span class="sc">-</span><span class="fl">0.5</span>))</span>
+<span id="cb93-387"><a href="#cb93-387" aria-hidden="true" tabindex="-1"></a><span class="fu">plogis</span>(intercept <span class="sc">+</span> sem_class_t_c<span class="sc">*</span>(<span class="sc">-</span><span class="fl">0.5</span>))</span>
+<span id="cb93-388"><a href="#cb93-388" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-389"><a href="#cb93-389" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-392"><a href="#cb93-392" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-393"><a href="#cb93-393" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(df_dative<span class="sc">$</span>semantic_class)</span>
+<span id="cb93-394"><a href="#cb93-394" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-395"><a href="#cb93-395" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-396"><a href="#cb93-396" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-399"><a href="#cb93-399" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-400"><a href="#cb93-400" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">plogis</span>(intercept <span class="sc">+</span> sem_class_t_a<span class="sc">*</span>(<span class="sc">+</span><span class="fl">0.5</span>) <span class="sc">+</span> length_recip<span class="sc">*</span><span class="dv">0</span>)</span>
+<span id="cb93-401"><a href="#cb93-401" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-402"><a href="#cb93-402" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-405"><a href="#cb93-405" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-406"><a href="#cb93-406" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="fu">plogis</span>(intercept <span class="sc">+</span> sem_class_t_f<span class="sc">*</span>(<span class="sc">+</span><span class="fl">0.5</span>) <span class="sc">+</span> length_recip<span class="sc">*</span><span class="dv">0</span>)</span>
+<span id="cb93-407"><a href="#cb93-407" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-408"><a href="#cb93-408" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-411"><a href="#cb93-411" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-412"><a href="#cb93-412" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">plogis</span>(intercept <span class="sc">+</span> sem_class_t_p<span class="sc">*</span>(<span class="sc">+</span><span class="fl">0.5</span>) <span class="sc">+</span> length_recip<span class="sc">*</span><span class="dv">0</span>)</span>
+<span id="cb93-413"><a href="#cb93-413" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-414"><a href="#cb93-414" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-417"><a href="#cb93-417" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-418"><a href="#cb93-418" aria-hidden="true" tabindex="-1"></a>c <span class="ot">&lt;-</span> <span class="fu">plogis</span>(intercept <span class="sc">+</span> sem_class_t_c<span class="sc">*</span>(<span class="sc">+</span><span class="fl">0.5</span>) <span class="sc">+</span> length_recip<span class="sc">*</span><span class="dv">0</span>)</span>
+<span id="cb93-419"><a href="#cb93-419" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-420"><a href="#cb93-420" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-423"><a href="#cb93-423" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb93-424"><a href="#cb93-424" aria-hidden="true" tabindex="-1"></a>a</span>
+<span id="cb93-425"><a href="#cb93-425" aria-hidden="true" tabindex="-1"></a>c</span>
+<span id="cb93-426"><a href="#cb93-426" aria-hidden="true" tabindex="-1"></a>f</span>
+<span id="cb93-427"><a href="#cb93-427" aria-hidden="true" tabindex="-1"></a>p</span>
+<span id="cb93-428"><a href="#cb93-428" aria-hidden="true" tabindex="-1"></a>t</span>
+<span id="cb93-429"><a href="#cb93-429" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb93-430"><a href="#cb93-430" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-431"><a href="#cb93-431" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-432"><a href="#cb93-432" aria-hidden="true" tabindex="-1"></a><span class="fu"># `ggeffects` Package</span></span>
+<span id="cb93-433"><a href="#cb93-433" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-434"><a href="#cb93-434" aria-hidden="true" tabindex="-1"></a><span class="fu">## Difference between `ggeffect()`, `ggpredict()`, `ggemmeans()`</span></span>
+<span id="cb93-435"><a href="#cb93-435" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-436"><a href="#cb93-436" aria-hidden="true" tabindex="-1"></a><span class="fu"># Plotting predictions</span></span>
+<span id="cb93-437"><a href="#cb93-437" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-438"><a href="#cb93-438" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-439"><a href="#cb93-439" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-440"><a href="#cb93-440" aria-hidden="true" tabindex="-1"></a></span>
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
 </div> <!-- /content -->
 
 
