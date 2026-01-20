@@ -1,0 +1,603 @@
+---
+title: "Random forests for variable selection"
+description: "Determing important variables"
+author: "Daniela Palleschi"
+date: "01/13/2026"
+date-modified: last-modified
+categories: [random forests, variable selection, model fitting]
+draft: false
+filters:
+  - line-highlight
+execute: 
+  eval: true
+---
+
+Linguistic datasets often contain many potential predictors: frequency, length, surprisal, speaker demographics, etc. This is especially common in fields such as corpus linguistics, sociolinguistics, and phonetics. Deciding which variables actually matter can be a stumbling block when wanting to fit a statistical model to such datasets.
+
+Traditional approaches such as stepwise regression, *p*-value filtering, or trial-and-error model comparison are fragile and often misleading, especially when several of these potential predictors are correlated.
+
+In this post, we will see how random forests can be used as a robust, prediction-based variable selection tool in R, and how they fit naturally into a theory-driven linguistic workflow. We will also discusss their blindspots and how to be aware of their shortcomings. I would like to emphasise a theory-based method over a data-based method.
+
+# What are random forests?
+
+> Can't see the forest for the trees.
+
+Random forests are a machine learning technique used for prediction. It can be used complementarily with regression models by helping choose useful or important variables out of a large selection. This should, of course, be done in tandem with domain-specific knowledge and theoretical justification when possible. Importantly, random forests assume the data are independent, which is not typically the case in linguistic datasets.
+
+How do random forests work?
+
+> Random forests [...] work through the data and, by trial and error, establish whether a variable is a useful predictor. The basic algorithm used by the random forests constructs conditional inference trees. A conditional inference tree provides estimates of the likelihood of the value of the response variable (was/were) based on a series of binary questions about the values of predictor variables.
+
+@tagliamonte_models_2012, p.159
+
+This exerpt is from @tagliamonte_models_2012, a sociolinguistic paper looking at the production of *was/were* in Yorkshire English.
+
+# The problem: variable selection in linguistic research
+
+Many possible predictors may be considered as possible predictors in linguistic datasets, particularly in fields like phonetics, sociolinguistics, and corpus linguistics. This causes a problem for regression models, as many of these possible predictors are usually correlated, a known problem for regression models and their interpretation. This is because regression requires strong, specific assumptions. Regression answers the question Random forests ask a different question: Which variable(s) are more helpful for prediction?
+
+Random forests are robust against multicollinearity and handle nonlinearity automatically. An important distinction between random forests and regression is that random forests focus on prediction (how well does each variable predict the given data?) whereas regression focuses on inference. Random forests do provide information on the size, direction, or even presence of an effect of interest, but rather can help inform which of a set of given plausible variables are helpful predictors, and which are not.
+
+:::{.callout-warning}
+# Theory-driven verus data-driven variable selection
+
+It is important to emphasise that in most linguistic research we should be relying on our domain-specific knowledge and theoretically relevant variables, even when deciding what to include in our random forest. That is to say, just because you have 20 possible variables you *could* include, if you don't have any theoretical motivation to include them then they should not be included.
+
+:::
+
+# A simulated dataset
+
+Let's simulate a dataset so that we know exactly which variables matter but the model does not.
+
+We'll start by turning off scientific notation, because we're comparing very small values when working with random forests. This will help interpretation for those not familiar with how to read scientific notataion.
+
+```{r}
+options(scipen = 999)
+```
+
+## Packages
+
+Next let's install our required packages.
+
+We'll need the following packages.
+
+```{r}
+
+library(tidyverse)
+library(ranger)
+library(vip)
+library(lme4)
+library(MASS)    # For mvrnorm
+```
+
+## Simulate data
+
+We start by setting a random number generator for reproducibility purposes. We then generate a dataset with the following variables:
+
+- `frequency`
+- `length`
+- `animacy`
+- `definiteness`
+- `surprisal`
+- `speaker`
+
+Then, we create a 
+
+```{r}
+
+set.seed(123)
+n <- 2000
+n_speakers <- 40
+
+# Correlation between log-frequency and length (negative: short words are more frequent)
+mu <- c(log_freq = 2, length = 5)
+Sigma <- matrix(c(1, -0.6, -0.6, 2), 2, 2)  # cov matrix: negative correlation
+
+correlated_predictors <- mvrnorm(n, mu = mu, Sigma = Sigma) %>%
+  as_tibble() %>%
+  rename(log_frequency = log_freq) %>%
+  mutate(frequency = exp(log_frequency),
+         length = round(length))
+
+# Speaker random effects
+speaker_effects <- rnorm(n_speakers, 0, 30)
+
+data <- correlated_predictors %>%
+  mutate(
+    animacy      = sample(c("animate", "inanimate"), n, TRUE),
+    definiteness = sample(c("def", "indef"), n, TRUE),
+    surprisal    = rnorm(n, 5, 1),
+    speaker      = sample(1:n_speakers, n, TRUE),
+    speaker_effect = speaker_effects[speaker],
+    
+    # Continuous outcome: reaction time (RT)
+    rt = 500 - 30 * log_frequency + 10 * length - if_else(animacy == "animate", 20, 0) +
+         speaker_effect + rnorm(n, 0, 50),
+    
+    # Categorical outcome: syntactic choice
+    response = if_else(
+      0.8 * log_frequency - 0.5 * length + if_else(animacy == "animate", 0.7, 0) +
+      speaker_effect/50 + rnorm(n, 0, 0.5) > 0,
+      "A", "B"
+    ) %>% factor()
+  )
+
+
+
+
+```
+
+# Random forest
+
+```{r}
+rf_rt <- ranger(
+  rt ~ frequency + length + animacy + definiteness + surprisal + speaker,
+  data = data,
+  importance = "permutation",
+  num.trees = 500
+)
+
+vip(rf_rt, num_features = 10)
+
+```
+
+```{r}
+imp_choice <- sort(rf_rt$variable.importance, decreasing = TRUE)
+imp_choice
+
+```
+
+```{r}
+library(vip)
+
+vip(rf_rt, num_features = 10)
+
+```
+
+```{r}
+get_importance <- function() {
+  rf <- ranger(
+    response ~ .,
+    data = data,
+    importance = "permutation",
+    probability = TRUE
+  )
+  rf_rt$variable.importance
+}
+
+imps <- replicate(50, get_importance(), simplify = FALSE)
+imp_mat <- do.call(cbind, imps)
+
+apply(imp_mat, 1, mean)
+
+```
+
+# Fit your model
+
+We've now identified important predictors, and can fit our model. We take a few steps first: centering and scaling our continuous predictors (in other words, standardising), and making `animacy` a factor and setting sum contrast coding, which centers the two levels around zero. These steps are important for the interpretation of main and interaction effects, and ensure the intercept represents the overal mean of the data, while importantly minimising the effect correlation between predictor variables has on coefficients.
+
+```{r}
+data$animacy <- as.factor(data$animacy)
+levels(data$animacy)
+contrasts(data$animacy) <- contr.sum(2)
+contrasts(data$animacy)
+
+data <- data |> 
+  mutate(frequency_z = scale(frequency),
+         length_z = scale(length))
+
+lmer_rt <- lmer(
+  rt ~ frequency + length + animacy + (1  | speaker),
+  data = data
+)
+
+
+summary(lmer_rt)
+
+```
+
+## Check collinearity
+
+When predictors are correlated, regression coefficients can become unstable, standard errors inflate, and it becomes tricky to interpret individual effects. This is because regression assumes predictors are not correlated
+
+```{r}
+library(car)
+
+vif(lmer_rt)
+```
+
+# Workflow
+
+1. Start with your research question(s): what exactly is it that you want to compare? If your planned analysis is more exploratory, focus on existing theory and your domain-specific knowledge. What are plausible predictors in your dataset?
+
+2. Use random forests to identify which of your plausible predictors are most important. Be cautious of possibly correlated predictors, which do not cause a problem for random forests but violate regression model assumptions.
+
+3. Check for collinearity *without checking the model estimates*: `model <- lmer(response ~ frequency + length)`, then directly `vif(model)`.
+
+4. Fit your model, centring/standardising your continuous predictors and choosing reasonable contrast coding for factors. Be sure to include varying by-speaker intercepts and slopes where necessary.
+
+5. Interpret coefficients.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+df_lexdec$NativeLanguage <- as.factor(df_lexdec$NativeLanguage)
+df_lexdec$Class <- as.factor(df_lexdec$Class)
+df_lexdec$Correct <- as.factor(df_lexdec$Correct)
+df_lexdec$Word <- as.factor(df_lexdec$Word)
+```
+
+I don't do all of them cause they're mostly already factors (you can check this with `class(data$variable)`). We can use numerical variables too, but categorical variables must be coded as factors and not as strings (`character`).
+
+```{r}
+class(df_lexdec$meanRT)
+```
+
+`meanRT` is numeric, which makes sense because it contains the log-transformed reaction times (ms) to the lexical decision task.
+
+```{r}
+class(df_lexdec$NativeLanguage)
+```
+
+`NativeLanguage` is a factor. We can check the levels:
+
+```{r}
+levels(df_lexdec$NativeLanguage)
+```
+
+which are either `English` or `Other`.
+
+# Random forest
+
+We'll use the `partykit` package to build our forest.
+
+First, set your random number generator so it's the same each time (for reproducibility reasons). The number you choose doesn't matter, as long as you use the same number when trying to reproduce the results.
+
+```{r}
+set.seed(1234)
+```
+
+Now fit a forest to your model. We'll take a subset of the variables from the `df_lexdec` dataset. You can enter `?lexdec` in the Console to see a list of what all the variables contain, as well as their class.
+
+```{r}
+#| error: true
+
+lexdec_cforest <- cforest(
+  RT ~ Class +
+    Correct +
+    Frequency +
+    meanRT +
+    Complex +
+    Length +
+    Sex +
+    Subject +
+    Word +
+    NativeLanguage,
+  data = df_lexdec
+)
+```
+
+We get a warning: `cannot search for unordered splits in >= 31 levels`. This is because we have a factor, `Word`, with more than 31 unorder levels (there were 79 words).
+
+```{r}
+length(unique(levels(df_lexdec$Word)))
+```
+
+We don't have this problem with Subject, which would be one of our grouping factors in a mixed effects model. So, it can stay.
+
+```{r}
+length(unique(levels(df_lexdec$Subject)))
+```
+
+::: {.callout-warning}
+## Random effects
+
+Mixed effects aren't possible in random forests, so a work around is to include your random effects are predictors. However, this only works if your grouping factor has fewer than 31 levels, otherwise you'll get a warning. So, remove grouping factors with more than 31 levels.
+:::
+
+## Remove factors with too many levels
+
+```{r}
+#| eval: false
+cforest_lexdec <- cforest(
+  RT ~ Class +
+    Correct +
+    Frequency +
+    meanRT +
+    Complex +
+    Length +
+    Sex +
+    Subject +
+    # Word +
+    NativeLanguage,
+  data = df_lexdec
+)
+```
+
+```{r}
+#| eval: false
+#| echo: false
+saveRDS(cforest_lexdec, here::here("rds","random-forests","cforest_lexdec1.rds"))
+```
+
+```{r}
+#| echo: false
+cforest_lexdec <- readRDS(here::here("rds", "random-forests", "cforest_lexdec1.rds"))
+```
+
+What does our forest contain?
+
+```{r}
+summary(cforest_lexdec)
+```
+
+To check the dependent variable used for a particular forest:
+
+```{r}
+cforest_lexdec$terms[[2]]
+```
+
+And the predictors:
+
+```{r}
+cforest_lexdec$terms[[3]]
+```
+
+Get the variance importance measure (`varimp()`; VIMP) and print them in asending order (`sort()`). 
+
+```{r}
+vimp_lexdec <- varimp(cforest_lexdec)
+sort(vimp_lexdec)
+```
+
+We can also visualise these values with the `dotplot` function from the `lattice` package.
+
+```{r}
+library(lattice)
+dotplot(sort(vimp_lexdec))
+```
+
+:::{.callout-important}
+## Variance importance
+
+In the `partykit` package the VIMP is computed via permutation variance importance. Importantly these values are relative, i.e., are only interpretable in comparison to other values from the same random forest. In other words, there is no absolute scale so you can't compare these values to those from another analysis. Beware (multi)collinearity though, importance can be split across correlated predictors!
+:::
+
+Here we see that `NativeLanguage` and `meanRT` (which is a participant's (log) mean reaction time), are highly important relative to the other variables. This is unsurprising, as faster responders will tend to have faster responses, and native English speakers will tend to be faster. These values are *relative*, so if we remove meanRT, for instance, (since it's also likely not of theoretical importance), the other values will be affected. We could leave NativeLanguage in, as it might be theoretically interesting to determine whether native speakers have faster lexical decision times.
+
+## Remove uninteresting (but influential) variable `meanRT`
+
+```{r}
+#| eval: false
+cforest_lexdec = cforest(
+  RT ~ Class +
+    Correct +
+    Frequency +
+    # meanRT +
+    Complex +
+    Length +
+    Sex +
+    Subject +
+    # Word +
+    NativeLanguage,
+  data = df_lexdec
+)
+```
+
+```{r}
+#| eval: false
+#| echo: false
+saveRDS(cforest_lexdec,
+        here::here("rds","random-forests","cforest_lexdec2.rds"))
+```
+
+```{r}
+#| echo: false
+cforest_lexdec <- readRDS(here::here("rds", "random-forests",
+                                     "cforest_lexdec2.rds"))
+```
+
+What have we now got?
+
+```{r}
+summary(cforest_lexdec)
+```
+
+500 trees in our forest.
+
+```{r}
+vimp_lexdec <- varimp(cforest_lexdec)
+sort(vimp_lexdec)
+```
+
+```{r}
+dotplot(sort(vimp_lexdec))
+```
+
+```{r}
+plot(cforest_lexdec[[1]])
+```
+
+
+These seems more interesting from a domain-knowledge perspective: Looking at the factors relevant to the stimuli (the word), rather than the participants: Word frequency is the 'most important' variable in that it had a higher contribution (relative to other included predictors) to classification accuracy. This value does not tell us the size or direction of the effect, nor whether the effect would be statistically significant.
+
+Turning to the participant-relevant factors of `Subject` (which subject the reaction time came from) and `NativeLanguage` (whether the participant is a native speaker of English or not), these two are the most important. This means that the knowing which participant the data point comes from is very important for predicting the value of the reaction time, which is typical in linguistic research as inter-individual differences tend to account for a large amount of variability. This is why mixed-effects models are highly important in most linguistic research, as data points are not independent. Next is the question of NativeLanguage, which also has high importance unsurprisingly. Individuals will tend to be faster at making lexical decisions in their native language than in a non-native language.
+
+You can write: 
+
+>> (Permutation-based) variable importance measures indicated that Frequency was the most important predictor, followed by Class, Word...etc.
+
+Use these values *in addition to your domain-specific knowledge*/theoretical justification to select the variables you will include in your model.
+
+You can also visualise the variable importance:
+
+```{r}
+library(lattice)
+dotplot(sort(vimp_lexdec))
+```
+
+## Colinearity
+
+Word length and word frequency are also often correlated. Let's check this quickly:
+
+```{r}
+cor(df_lexdec$Frequency,df_lexdec$Length)
+plot(df_lexdec$Frequency,df_lexdec$Length)
+```
+
+There is a negative correlation (longer words are less frequent). What would happen if we removed word length, since theoretically word frequency might be of more interest here.
+
+```{r}
+#| eval: false
+cforest_lexdec = cforest(
+  RT ~ Class +
+    Correct +
+    Frequency +
+    # meanRT +
+    # Complex +
+    # Length +
+    # Sex +
+    Subject +
+    # Word +
+    NativeLanguage,
+  data = df_lexdec
+)
+```
+
+```{r}
+#| eval: false
+#| echo: false
+saveRDS(cforest_lexdec, here::here("rds","random-forests","cforest_lexdec3.rds"))
+```
+
+```{r}
+#| echo: false
+cforest_lexdec <- readRDS(here::here("rds", "random-forests", "cforest_lexdec3.rds"))
+```
+
+```{r}
+vimp_lexdec <- varimp(cforest_lexdec)
+sort(vimp_lexdec)
+```
+
+```{r}
+dotplot(sort(vimp_lexdec))
+```
+
+Frequency VIMP increased. The same could be true for whether a word is complex or not. 
+
+```{r}
+plot(df_lexdec$Frequency,df_lexdec$Complex)
+```
+
+Yes, seems less frequent words tended to be coded as `1`, which is likely to mean they're `complex`.
+
+```{r}
+#| eval: false
+#| 
+cforest_lexdec = cforest(
+  RT ~ Class +
+    Correct +
+    Frequency +
+    # meanRT +
+    # Complex +
+    # Length +
+    # Sex +
+    Subject +
+    # Word +
+    NativeLanguage,
+  data = df_lexdec
+)
+```
+
+```{r}
+#| eval: false
+#| echo: false
+saveRDS(cforest_lexdec, here::here("rds","random-forests","cforest_lexdec4.rds"))
+```
+
+```{r}
+#| echo: false
+cforest_lexdec <- readRDS(here::here("rds", "random-forests", "cforest_lexdec4.rds"))
+```
+
+```{r}
+vimp_lexdec <- varimp(cforest_lexdec)
+sort(vimp_lexdec)
+```
+
+```{r}
+dotplot(sort(vimp_lexdec))
+```
+
+# Prediction correlation
+
+We can check if the out-of-bag (OOB) predictions are correlated with the observed values. This is a sanity check that only describes whether the rank-order of the observed values was preserved in the predicted values.
+
+```{r}
+pred_lexdec <- predict(cforest_lexdec, OOB = TRUE) |> 
+  data.frame() |> 
+  dplyr::rename(predict_oob = `predict.cforest_lexdec..OOB...TRUE.`)
+df_lexdec <- cbind(df_lexdec,pred_lexdec)
+```
+
+
+```{r}
+cor(df_lexdec$RT, df_lexdec$predict_oob)
+```
+
+```{r}
+df_lexdec |> 
+  ggplot() +
+  aes(x = RT, y = predict_oob) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(method = "lm") +
+  labs(x = "Observed logRT", y = "Predicted logRT") +
+  theme_minimal()
+```
+
+```{r}
+df_lexdec
+  plot(df_lexdec$RT, df_lexdec$RT - df_lexdec$predict_oob)
+abline(h = 0)
+```
+
+
+We see
+
+
+# Save the forest
+
+Once you have a forest you want to report, I recommend saving it as an R data object (`.rds`) and loading it later when you return to your script. This will save you time.
+
+```{r}
+#| eval: false 
+# save it in some folder that I've named rds
+saveRDS(cforest_lexdec, "rds/cforest_lexdec.rds")
+```
+
+```{r}
+readRDS("rds/cforest_lexdec.rds")
+```
+
+You can now produce your plots, print (again) the variable importance values, or do whatever else you like without having to run the whole thing again.
+
+# Take away
+
+- random forests uses machine learning to determine which variables are important in predicting your data
+- you can get variable importance values which are relative to the variables included
+  + interpret the *ranking* of these values, not the values themselves
+  + positive values add to the prediction, negative values do not
+- combine these values with your domain-specific knowledge, your research questions, or theoretical relevance to choose which variables to include in a regression model
+- beware (multi)collinearity: this can divide the variable importance between correlated predictors
