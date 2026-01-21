@@ -14,9 +14,11 @@ website:
         href: index.xml
 format:
   html:
+    toc: true
+    code-tools: true
     theme: flatly
     css: styles.css
-    
+bibliography: references.bib
 csl: apa.csl
 
 

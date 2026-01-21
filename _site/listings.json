@@ -2,6 +2,11 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/random_forests-ranger/index.html",
+      "/posts/random_forests/index.html",
+      "/posts/homebrew/index.html",
+      "/posts/updater/index.html",
+      "/posts/dotplot/index.html",
       "/posts/papapja7/index.html"
     ]
   }
