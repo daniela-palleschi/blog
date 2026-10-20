@@ -1,0 +1,202 @@
+---
+title: "Life after the OSF: Sharing code and data for double-blind peer review without the OSF"
+description: "An anonymised GitHub mirror and a Zenodo draft link: my workflow for a Quarto project"
+date: 2026-10-20
+date-modified: last-modified
+categories: [open science, reproducibility, GitHub, Zenodo, Quarto]
+editor: source
+execute:
+  eval: false
+---
+
+:::{.callout-tip}
+## TL;DR
+
+OSF Projects are being phased out in early 2027, and with them the easy anonymised view-only links for peer review. This post walks through my (current) replacement workflow for a project: anonymising locally, sharing code via an Anonymous GitHub mirror, and sharing data via a Zenodo draft with a secret link. Plus some GDPR caveats on why only fully anonymised data should go on Zenodo.
+:::
+
+## Why this post
+
+The Center for Open Science is phasing out OSF Projects: new projects are no longer possible from November 16, 2026, and all existing projects become read-only on February 19, 2027 ([COS announcement](https://www.cos.io/osf-changes)). Pre-registrations and pre-prints stay, but OSF's anonymised view-only links for reviewers go with the projects.
+
+I recently had to share the code, data and rendered output of a Quarto book with anonymous reviewers, so I tried out two replacements:
+
+1. **Anonymous GitHub** ([anonymous.4open.science](https://anonymous.4open.science)): an anonymised mirror of a GitHub repo
+2. **A Zenodo draft** shared via a secret link
+
+I personally opted for sharing the Anonymous GitHub mirror with reviewers. Once the paper is accepted, though, GitHub isn't a suitable long-term home for research materials: it's proprietary (owned by Microsoft), isn't designed for permanent archiving, and doesn't provide a persistent identifier such as a DOI that unambiguously links to your materials. So I'd recommend Zenodo as the final home for your research code and data, with GitHub as the working space and the Zenodo archive as the citable record.
+
+:::{.callout-important collapse="true"}
+### Zenodo and the GDPR: Caveat for EU-based researchers
+
+As a researcher and research data manager at an EU-based research institute (not to mention a member of the internal ethics committee), I must handle/advise my institute members to handle personal data in line with the General Data Protection Regulation [GDPR](https://gdpr-info.eu/). Under the GDPR, personal data can only leave the EU/EEA if the destination offers adequate protection, and many institutions (mine included) go a step further and require storage on EU servers.
+
+Zenodo's servers are hosted by the European Organisation for Nuclear Research/Partical Physics, commonly known as [CERN](https://home.cern/), in Switzerland, which is not in the EU. At first glance, that seems fine: Switzerland has had an EU [adequacy decision](https://commission.europa.eu/law/law-topic/data-protection/international-dimension-data-protection/adequacy-decisions_en) since 2000, reconfirmed in 2024, meaning personal data can flow there without additional safeguards.
+
+But Zenodo isn't hosted by Switzerland, it's hosted by CERN. As an intergovernmental organisation, CERN has its own privileges and immunities under international law, and processes personal data under its own internal rules ([Operational Circular 11](https://cds.cern.ch/record/2651311)), which it describes as comparable to the GDPR. Comparable is not the same as equal, though. According to [Zenodo's own FAQ](https://support.zenodo.org/help/en-gb/32-data-privacy), CERN:
+
+- is not subject to the GDPR
+- has no adequacy decision under [Article 45 GDPR](https://gdpr-info.eu/art-45-gdpr/)
+- does not enter into Standard Contractual Clauses or other transfer instruments under [Article 46 GDPR](https://gdpr-info.eu/art-46-gdpr/)
+
+That leaves only the derogations in [Article 49 GDPR](https://gdpr-info.eu/art-49-gdpr/), such as the explicit consent of participants. CERN leaves that assessment to the uploading institute, which remains responsible for having a valid legal basis for the transfer and informing participants.
+
+#### What this means for EU-based researchers
+
+- **Article 49 derogations are meant for exceptional cases** and are interpreted narrowly, so they're not a sound basis for routinely uploading participant data. If you did want to rely on consent, it would have to be explicit consent to this specific transfer, planned from the consent form onwards, not added afterwards.
+- **Pseudonymised data is still personal data** under the GDPR, so replacing names with participant IDs doesn't solve this.
+- **Fully anonymised data falls outside the GDPR,** so it can go on Zenodo without these concerns. Watch out for indirect identifiers, though (age, L1, place of birth, voice recordings, free text responses), especially with small or specific samples.
+- **Your own name and affiliation in the Zenodo metadata are personal data too.** That's fine, since you're consenting to publishing them yourself, but it shows that "no personal data on Zenodo" really means "no participant data".
+- **If in doubt, ask your data protection officer.** Your institution's policy may be stricter than the GDPR itself.
+
+In short: Zenodo is a great home for anonymised data, code and materials. Personally identifiable participant data stays on institutional (EU) storage.
+:::
+
+Here's the workflow, including the snags I ran into.
+
+## Before you start: the golden rule
+
+Never push identifiable or personal data to GitHub, not even to a private repo. Only fully anonymised data should leave your institution's storage.
+
+**When is data anonymised?** Data is anonymised when no one can identify the people in it, using any means reasonably likely to be used, taking into account cost, time and available technology ([GDPR Recital 26](https://gdpr-info.eu/recitals/no-26/)). In practice, this means:
+
+- **No key exists** linking participant IDs back to people, anywhere
+- **No combination of variables** can single someone out. Indirect identifiers like age, L1, place of birth or rare language combinations can identify a person even without a name, especially in small samples
+- **No inherently identifying data** remains, such as voice recordings, videos, faces or free text responses
+
+**Pseudonymised data** (names replaced with IDs, with a key stored elsewhere) still counts as personal data under the GDPR, so it stays on institutional storage.
+
+:::{.callout-note}
+## How anonymous is it, really?
+
+To see how quickly a few harmless-looking variables add up, try the [Observatory of Anonymity](https://ooa.world/). Enter a few demographics (e.g. birth date, gender, location) and it estimates how likely you are to be uniquely identified, based on census data from 89 countries (though not Germany, where I live). Everything runs in your browser, so nothing you enter is stored. The underlying study ([Rocher et al., 2019](https://doi.org/10.1038/s41467-019-10933-3)) found that 99.98% of Americans could be correctly re-identified in an "anonymised" dataset using just 15 demographic attributes.
+:::
+
+Now, on to the point of this post: sharing an anonymous repository with reviewers in the double-blind peer review process!
+
+## 1. Set up a private GitHub repo
+
+From the project in RStudio:
+
+```{r}
+pacman::p_load(usethis)
+use_github(private = TRUE)
+```
+
+Keep data and build output out of the repo with a `.gitignore`. For this reason, I *always* keep raw, identifiable data in its own unique folder. This way, I can very easily exclude everything in this folder by adding it to the `.gitignore` file:
+
+```
+data/raw/*
+```
+
+Remember that anything committed stays in the Git history, even after you delete the file.
+
+## 2. Anonymise the project
+
+I use RStudio's **Find in Files** (`Ctrl+Shift+F` / `Cmd+Shift+F`) with **Replace All**, swapping each identifier for a unique placeholder:
+
+- your name → `ANON_AUTHOR`
+- email → `ANON_EMAIL`
+- also check initials, ORCID, GitHub username, institution and file paths like `/Users/yourname/...`
+
+Unique placeholders make de-anonymising a simple reverse Replace All later.
+
+::: {.callout-tip}
+If your README documents this process, write the placeholders there with hyphens (`ANON-AUTHOR`) instead of underscores. Otherwise the de-anonymising Replace All will also overwrite your instructions.
+:::
+
+Then re-render the PDF only, without touching the HTML:
+
+```bash
+quarto render --to pdf
+```
+
+Check the PDF and any other binary files (Word, images, `.RData`, rendered HTML) by hand. Find in Files can't search inside them, and neither can Anonymous GitHub.
+
+Commit and push.
+
+:::{.callout-note}
+## Do I need this step?
+
+If you only plan to use the Anonymous GitHub mirror, this step isn't strictly necessary, since the website can replace names and other strings for you. However, it only works on text files. Binary files such as PDFs, Word documents, images and `.RData` files aren't scrubbed, so a rendered PDF would still show your name.
+
+Anonymising locally and re-rendering fixes this, and it's needed anyway if you also share a Zenodo draft. Doing both is the safest option.
+:::
+
+## 3. Create the Anonymous GitHub mirror
+
+1. Make sure your GitHub repo is private for the review period, so reviewers can't find it by searching for a distinctive title or code snippet.
+2. Log in at [anonymous.4open.science](https://anonymous.4open.science) with GitHub and select the repo.
+3. Add terms to hide. Regex works, which saves listing every variant, e.g. to anonymise all mention of my name or the name of my institute (ZAS):
+
+```
+[Dd]aniela ?[Pp]alleschi
+\bZAS\b
+```
+
+4. Optionally set an expiry date that covers the review period.
+5. Open the resulting link in a private window (e.g., in incognito mode) and check everything.
+
+**Snags I hit:**
+
+- **Blank plots in the PDF viewer.** Some geom layers didn't show up in Anonymous GitHub's PDF preview. Rasterising the figures for the PDF output fixed it:
+
+```yaml
+format:
+  pdf:
+    fig-format: png
+    fig-dpi: 300
+```
+
+- **GitHub Pages.** The tool can serve an anonymised Pages site, but on a free GitHub plan Pages needs a public repo, and the Pages site itself is always public. For a private repo, I'd skip Pages and let reviewers use the file browser and PDF.
+- **Stale settings.** If the tool shows confusing errors about branches, a full refresh or re-pasting the repo URL clears its cached state.
+
+**Keep in mind:** it's a free academic tool, not an audited service, and it only hides what you tell it to. Fine for code and anonymised data, not for anything sensitive.
+
+## 4. Or: share a Zenodo draft
+
+If you're not familiar with GitHub, or you want the review version to become your published record, use a Zenodo draft instead (or as well). You get a reserved DOI to cite from the start, and after acceptance you simply add the author details and publish the same record.
+
+1. If you've got everything already on GitHub, click **Code > Download ZIP**. This gives you the full folder structure without the `.git` history.
+2. On Zenodo, click **New upload**, add the ZIP and PDF, and enter "Anonymous" as creator. Leave out affiliations, grant numbers and anything else identifying.
+3. Reserve a DOI, then **Save draft**. Do not publish.
+4. On the draft, go to **Share > Links** and create a link with **Can preview** permission ([Zenodo docs](https://help.zenodo.org/docs/share/about)).
+5. Test the link in a private window while logged out.
+
+Because the record is never published in its anonymised form, the anonymous version doesn't end up permanently in the record's version history.
+
+## 5. Link it in the paper
+
+Add the link to your paper (example LaTeX syntax with an anonymous.4open.science URL):
+
+```latex
+All data and code are available in an \href{https://anonymous.4open.science/r/your-repo-id}{anonymised repository}.
+```
+
+## 6. After acceptance: de-anonymise
+
+1. Find in Files for `ANON_AUTHOR` (and other placeholders), Replace All with the original text.
+2. Re-render the PDF, commit and push.
+3. Make the GitHub repo public.
+4. Connect GitHub to Zenodo and create a GitHub release, which triggers the archive. If you used a Zenodo draft, add the real author details and publish it instead.
+5. Cite the Zenodo **concept DOI** in the final paper, so it always points to the latest version.
+6. Delete the Anonymous GitHub mirror and any secret Zenodo links.
+
+## Wrap-up
+
+Though this process is more effort than ticking "anonymise" on an OSF view-only link, most of the work (placeholders, README instructions, `.gitignore`) only needs setting up once per project.
+
+I personally use GitHub a lot, but I'm more hesitant to push research data there, and have gladly used an institutional GitLab instance for this in the past (shout out to the HU Berlin; if you have a HU account check it out: [https://scm.cms.hu-berlin.de/](https://scm.cms.hu-berlin.de/)). Zenodo's GitHub integration is fairly seamless, but it lacks the simplicity of OSF's one-click anonymisation. Then again, uploading and organising files on OSF was a pain. Zenodo has no folder structure at all: you simply upload single files or zipped folders. That keeps uploading simple, but means files inside a zip can't be opened in the browser, they're only listed. You win some, you lose some.
+
+With OSF stepping back as a repository, I hope Zenodo will make anonymised sharing for review easier. Until then, we work with what we've got.
+
+## Honourable mentions
+
+An honourable mention goes to [Codeberg](https://codeberg.org) and [GitLab](https://gitlab.com), open source alternatives to GitHub (which is proprietary and owned by Microsoft). Just note that both Anonymous GitHub and Zenodo's automatic archiving only work with GitHub, so with these you'd upload snapshots to Zenodo manually.
+
+A few other repositories worth knowing about, that I'm aware of but haven't used myself:
+
+- **Dataverse** installations can offer anonymised private URLs for double-blind review (since version 5.6), which hide the depositor's identifying metadata. Whether this is switched on depends on the installation. For linguists, [TROLLing](https://dataverse.no/dataverse/trolling) (the Tromsø Repository of Language and Linguistics, part of DataverseNO) is a good option, and as Norway is in the EEA, the GDPR applies.
+- **Dryad** has a dedicated "Private for Peer Review" mode with a randomised, de-identified reviewer link. Note that it charges data publishing fees unless your institution or journal covers them.
+- **Figshare** offers private links for peer review, but it's a commercial platform.
+- **CLARIN centres** are specialised repositories for language resources, with EU-based infrastructure. They're more suited to long-term archiving of corpora and recordings than to quick sharing for review.
