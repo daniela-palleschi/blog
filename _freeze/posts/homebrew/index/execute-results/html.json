@@ -1,0 +1,15 @@
+{
+  "hash": "d4c7790235d4f5362bba19fe4b4b4188",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Homebrew for Mac\"\ndescription: \"Using Homebrew to update R\"\nauthor: \"Daniela Palleschi\"\ndate: \"12/08/2025\"\ndate-modified: last-modified\ncategories: [mac, package management]\ndraft: false\nfilters:\n  - line-highlight\n---\n\n\nThis blog introduces Homebrew [https://brew.sh/](https://brew.sh/), a package manager for Mac users. Homebrew uses the Terminal command line.\n\n# Installing Homebrew\n\nHomebrew is very simple to install. You just have to enter the following into Terminal (if you've never used Terminal, just type 'Terminal' in the Mac's search function).\n\n\n::: {.cell}\n\n```{.r .cell-code}\n/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"\n```\n:::\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
