@@ -1,0 +1,419 @@
+---
+title: "Visualising random effects"
+description: "Caterpillar plots with `lattice::dotplot()` and `ggplot2`"
+author: "Daniela Palleschi"
+date: "10/14/2024"
+date-modified: last-modified
+categories: [linear mixed models, data visualisation]
+draft: false
+filters:
+  - line-highlight
+---
+
+This blog post goes over how to produce visualisations of by-grouping factor (e.g., by-participant) varying intercepts and slopes.
+
+# Set-up
+
+The set-up for this example contains everything leading up to inspecting the random effects of a linear mixed model.
+
+## Packages
+
+Required packages for reproducible example:
+
+```{r}
+## install 'pacman' if you don't have it
+# install.packages("pacman")
+
+# p_load(): load or install all listed CRAN packages
+pacman::p_load(
+  languageR, # for the example data
+  dplyr, # summarising our data
+  janitor, # for summarising our data
+  lme4, # fitting our model
+  lattice # for the caterpillar plots
+)
+```
+
+## Load data
+
+We'll use a dataset from the `languageR` dataset [@languageR].
+
+```{r}
+df_lexdec <- languageR::lexdec
+```
+
+### Inspect dataset
+
+Check out the variable names:
+
+```{r}
+names(df_lexdec)
+```
+
+Let's look at the first few rows of some selected columns:
+
+```{r}
+head(df_lexdec[c(1:5,9)])
+```
+
+How many participants?
+
+```{r}
+length(unique(df_lexdec$Subject))
+```
+
+There are `r length(unique(df_lexdec$Subject))` participants in this dataset. How many unique words were there?
+
+```{r}
+length(unique(df_lexdec$Word))
+```
+
+There are `r length(unique(df_lexdec$Word))` words.
+
+How many observations (rows) per participant?
+
+```{r}
+df_lexdec |> 
+  dplyr::count(Subject) |> 
+  count(n, name = "Subject")
+```
+
+We see that all 21 participants had 79 observations, i.e., this was a repeated measures design. This is nice and clean, as 79 x 21 equals the number of observations in the dataset (`r nrow(df_lexdec)`): 
+
+```{r}
+79*21 == nrow(df_lexdec)
+```
+
+This means there are no missing values. Wouldn't have been a problem for our model, but is good to know (and always good to double check).
+
+## Fit mixed effects model
+
+We'll ignore a lot of steps for the sake of simplicity here (e.g., transforming variables). I will just set the two-level factor `NativeLanguageOther` to sum contrast coding.
+
+```{r}
+levels(df_lexdec$NativeLanguage)
+```
+
+I see that the level `English` comes first. I want to set this to -0.5, and `Other` to +0.5. I do that like so:
+
+```{r}
+contrasts(df_lexdec$NativeLanguage) <- c(-0.5, +0.5)
+```
+
+And I check the contrasts:
+
+```{r}
+contrasts(df_lexdec$NativeLanguage)
+```
+
+Let's fit a linear mixed model with log reaction times (`RT`) as predicted by word frequency (`Frequency`), with by-participant (`Subject`) and by-word (`Word`) varying intercepts and slopes.
+
+```{r}
+mod_lexdec <-
+  lmer(RT ~ Frequency + NativeLanguage +
+         (1 + Frequency | Subject) +
+         (1 + NativeLanguage | Word),
+       data = df_lexdec,
+       control = lmerControl(optimizer = "bobyqa")
+       )
+```
+
+First: note we have a single varying slope for participant and word each. The effect of `Frequency` is allowed to vary between participants because each participant contributed data points for words of different frequencies (presumably). The effect of `NativeLanguage` is allowed to vary between words because we have data points from different NativeLanguage levels (English, Other) for each word (presumably). Importantly, `NativeLanguage` does not vary within a single subject, nor does word frequency vary within a single word.
+
+### Inspect model
+
+```{r}
+summary(mod_lexdec)
+```
+
+In terms of fixed effects, we see a negative slope for `Frequency`, indicating shorter log reaction times for more frequent words. We see a positive slope for `NativeLanguageOther`, indicating longer log reaction times for participants whose first language was not English. We will not consider the size of these effects nor whether they're "significant". We're really interested in the random effects here.
+
+# Random effects
+
+We have our model (log-transformed reaction times to a lexical decision task, with the predictors log word-frequency and native language (English or Other), with by-participant and -word varying intercepts and relevant slopes). We can now inspect the random effects and the variance-covariance matrix:
+
+```{r}
+VarCorr(mod_lexdec)
+```
+
+We can get the divergence of each level of our grouping factors from the population-level estimates:
+
+```{r}
+ranef(mod_lexdec)$Subject
+```
+
+```{r}
+head(ranef(mod_lexdec)$Word, n = 10)
+```
+
+I've printed just the first 10 words to avoid printing all 79. Notice the values consist of a mix of positive and negative values. This is because the population-level estimate (i.e., the fixed effects) lies in the middle of all the observations. These are the *deviances*, i.e., how each participant's or word's fitted intercept or slope value deviates from the population-level value.
+
+We can also print the actual fitted values:
+
+```{r}
+coef(mod_lexdec)$Subject
+```
+
+```{r}
+head(coef(mod_lexdec)$Word, n = 10)
+```
+
+Note that these are now much closer to the fixed effects (population-level values). Importantly, see that the slopes that we did *not* allow to vary are the same across the relevant grouping factor. That's because we told our model that these effects do not vary between the levels of the relevant grouping factors (e.g., the effect of `NativeLanguage` does not vary within participant).
+
+## Visualising random effects: deviances from the population-level estimates
+
+Finally, the point of this blog post: visualising the random effects.
+
+Print just the by-subject random effects deviances:
+
+```{r}
+#| label: fig-ranef1
+#| fig-cap: By-subject random effects deviances
+dotplot(ranef(mod_lexdec))$Subject
+```
+
+Print just the by-word random effects:
+
+```{r}
+#| label: fig-ranef2
+#| fig-cap: By-word random effects deviances
+dotplot(ranef(mod_lexdec))$Word
+```
+
+In these plots, 0 on the x-axis corresponds to the population-level values. So, the `(Intercept)`, 0 corresponds to the intercept value in the model coefficients (`r fixef(mod_lexdec)[1]`):
+
+```{r}
+fixef(mod_lexdec)
+```
+
+For most cases, we can just stop here. These plots give us everything we need.
+
+::: {.callout-note}
+## Deviances from population-level
+
+These plots show the *deviance* from the population-level estimates (where 0 means a mean equal to the population-level intercept, and a value of 0.15 mean a mean RT 0.15 log milliseconds longer than the population-level intercept). That's why the x-axis is centred around 0.0: this is the population-level value for the relevant plot (either the intercept or native language).
+
+The by-participant intercept values are roughly the mean values per participant (or, more precisely, the fitted estimates, which will typically vary a little bit from the exact observed by-participant means due to [shrinkage](https://www.tjmahr.com/plotting-partial-pooling-in-mixed-effects-models/)). The slope values would be the effect of the relevant predictor per participant. To get the actual fitted values, we just add the 
+:::
+
+## Caterpillar plot with `ggplot2`
+
+We could also produce these plots by hand to (potentially) facilitate the interpretation of the random effects. We won't really get any new information here, but we can visualise the same information differently. These steps require more experience with the infrastructure of an `lmer()` model, as well as `dplyr`, `tidyr`, and `ggplot2` syntax. You can ignore the coding part and just look at the produced plots to see if these aid in the interpretation of the random effects.
+
+We'll use the `broom.mixed` and `ggplot2` packages.
+
+```{r}
+pacman::p_load(
+  ggplot2,
+  broom.mixed
+)
+```
+
+
+```{r}
+fig_res_dev <-
+  # produce tidy table of random effects
+  broom.mixed::tidy(mod_lexdec, effects = "ran_vals", conf.int = TRUE) |> 
+  # by-Subject only
+  filter(group == "Subject") |> 
+  # begin plotting
+  ggplot() +
+  aes(x = estimate, y = reorder(level, estimate))  +
+  geom_errorbar(
+    aes(xmin = conf.low,
+        xmax = conf.high)
+  ) +
+  geom_point(colour = "blue") +
+  # add vertical line for population-level intercept
+  geom_vline(xintercept = 0, colour = "red", linetype = "dashed", alpha = .5) +
+  # add informative labels
+  labs(title = "By-participant intercept deviance (log RTs)",
+       y = "Participant ID",
+       x = "Deviance (log ms)") +
+  facet_grid(~term) +
+  theme_bw()
+```
+
+```{r}
+#| label: fig-ggplot2_ranef
+#| fig-cap: Caterpillar plot of by-participant varying intercepts and slopes (deviances) produced with `broom.mixed::tidy()` and `ggplot2`
+fig_res_dev
+```
+
+### Visualising fitted values
+
+We can also shift the x-axis by the population-level estimates so that we have the fitted random effects values rather than the deviances from the population-level estimates. We do this by adding a line of code that (see code annotation 1. below) and moving the red dotted line to cross at the population-level intercept value (see code annodtation 2. below). We'll do this by directly accessing the Intercept value from our model using:
+
+```{r}
+fixef(mod_lexdec)[1]
+```
+
+```{r}
+fig_res_b0 <-
+  # produce tidy table of random effects
+  broom.mixed::tidy(mod_lexdec, effects = "ran_vals", conf.int = TRUE) |> 
+  mutate(across(c(estimate,conf.low,conf.high),~.+fixef(mod_lexdec)[1])) |> # <1>
+  # by-Subject varying intercepts only
+  filter(group == "Subject",
+         term == "(Intercept)") |> # <2>
+  # begin plotting
+  ggplot() +
+  aes(x = estimate, y = reorder(level, estimate)) +
+  geom_errorbar(
+    aes(xmin = conf.low,
+        xmax = conf.high)
+  ) +
+  geom_point(colour = "blue") +
+  # add vertical line for population-level intercept
+  geom_vline(xintercept = fixef(mod_lexdec)[1], # <3>
+             colour = "red", linetype = "dashed", alpha = .5) +
+  # add informative labels
+  labs(title = "By-participant varying intercepts",
+       y = "Participant ID",
+       x = "Intercept (log ms)") +
+  # beautify
+  theme_bw()
+```
+1. Add the intercept value to all the by-participant intercept deviances
+2. Look only at intercepts
+3. Add the red dotted line to the population-level intercept value
+
+We do this separately for the varying intercept and for the varying slope(s) because the population-levels we add differ. Now we want to adjust each by-participant varying slope (`Frequency`) by replacing `fixef(mod_lexdec)[1]` with `fixef(mod_lexdec)[2]`.
+
+```{r}
+fixef(mod_lexdec)[2]
+```
+
+
+```{r}
+fig_res_b1 <-
+  # produce tidy table of random effects
+  broom.mixed::tidy(mod_lexdec, effects = "ran_vals", conf.int = TRUE) |> 
+  mutate(across(c(estimate,conf.low,conf.high),~.+fixef(mod_lexdec)[2])) |> # (1) #<<
+  # by-Subject varying intercepts only
+  filter(group == "Subject",
+         term == "Frequency") |> # (2) #<<
+  # begin plotting
+  ggplot() +
+  aes(x = estimate, y = reorder(level, estimate)) +
+  geom_errorbar(
+    aes(xmin = conf.low,
+        xmax = conf.high)
+  ) +
+  geom_point(colour = "blue") +
+  # add vertical line for population-level intercept
+  geom_vline(xintercept = fixef(mod_lexdec)[2], # (3) #<<
+             colour = "red", linetype = "dashed", alpha = .5) +
+  # add informative labels
+  labs(title = "By-participant varying word-frequency slopes",
+       y = "Participant ID",
+       x = "Frequency (log ms)") +
+  # beautify
+  theme_bw()
+```
+1. Add the `Frequency` estimate to all the by-participant slope deviances
+2. Look only at frequency only
+3. Add the red dotted line to the population-level frequency value
+
+Now we can print them side-by-side
+
+```{r}
+#| label: fig-comparisons
+#| code-fold: true
+#| out-width: "100%"
+#| fig-asp: 1
+#| fig-cap: Comparison of manual visualisations of by-participant random effects coefficients (A and B) and random effects deviances (C)
+library(patchwork)
+(fig_res_b0 + fig_res_b1) /
+  fig_res_dev +
+  plot_annotation(tag_levels = "A")
+```
+
+## Interpretation
+
+Notice that the two figures for the intercepts are pretty identical, save the linear transformation of the x-axis values. The varying slopes look a little different: this is due to the ordering of the participants, which in @fig-comparisons B is ordered by the by-participant frequency slope value (e.g., participant Z has the smallest slope value, not to be confused with the magnitude/size of the effect as it's actually the *largest* by-participant slope), whereas the right plot in @fig-comparisons C is ordered by the varying intercept value presented in the left plot in @fig-comparisons C. This is helpful because it also helps us visualise the correlation between by-participant varying intercepts and slopes, which is -0.877:
+
+```{r}
+VarCorr(mod_lexdec)
+```
+
+This negative correlation tells us that, in general, participants who had overall slower reaction times tended to have overall more smaller slope values. Again, be careful interpreting this is a smaller *effect*! Smaller negative numbers are actually larger negative effects).
+
+Looking back at @fig-comparisons B, the confidence intervals are also much wider than in the frequency plot in @fig-comparisons C. This is simply because of the x-axis range: in the latter, the x-axis range is identical to that of the varying intercepts, which has a broader range. That is to say, there was more within-participant variance in overall reaction times than there was in the overall effect of frequency. @fig-comparisons B simply has the range of values relevant for the slope values.
+
+@fig-comparisons B could be further adapted to mimic the frequency slope figure in @fig-comparisons C with some extra code (i.e., setting the x-axis range, re-ordering participants by corresponding intercept values). It's a matter of what exactly you want to get from these visualisations that will decide what you prefer.
+
+```{r}
+fig_res_b1_corr <-
+  # produce tidy table of random effects
+  broom.mixed::tidy(mod_lexdec, effects = "ran_vals", conf.int = TRUE) |> 
+  mutate(across(c(estimate,conf.low,conf.high),~.+fixef(mod_lexdec)[2])) |> 
+  # by-Subject varying intercepts only
+  filter(group == "Subject") |> 
+  # rename (Intercept)
+  mutate(term = ifelse(term == "(Intercept)", "Intercept", term)) |>
+  # pivot to create single column for intercept/slope estimates and conf. int's #<<
+  tidyr::pivot_wider( #<<
+    id_cols = c("group", "level"), #<<
+    values_from = c(estimate, conf.low, conf.high), #<<
+    names_from = term #<<
+  ) |> #<<
+  # remove unneeded variables
+  select(-conf.low_Intercept, -conf.high_Intercept) |> 
+  # rename variables
+  rename(Intercept = estimate_Intercept,
+         estimate = estimate_Frequency,
+         conf.low = conf.low_Frequency,
+         conf.high = conf.high_Frequency) |> 
+  # begin plotting
+  ggplot() +
+  # reorder participants (level) by intercept #<<
+  aes(x = estimate, y = reorder(level, Intercept)) + #<<
+  geom_errorbar(
+    aes(xmin = conf.low,
+        xmax = conf.high)
+  ) +
+  geom_point(colour = "blue") +
+  # add vertical line for population-level intercept
+  geom_vline(xintercept = fixef(mod_lexdec)[2], # 3. #<<
+             colour = "red", linetype = "dashed", alpha = .5) +
+  # add informative labels
+  labs(title = "By-participant varying word-frequency slopes",
+       y = "Participant ID",
+       x = "Frequency (log ms)") +
+  # add x-axis ticks with an identical range to the intercept plot #<<
+  scale_x_continuous(limits = c(-.5148797, 0.4351213)) + #<<
+  # beautify
+  theme_bw()
+```
+
+```{r}
+#| label: fig-comparisons2
+#| code-fold: true
+#| out-width: "100%"
+#| fig-asp: 1
+#| fig-cap: Comparison of manual visualisations of by-participant random effects coefficients ordered by varying intercept estimates (A and B) and random effects deviances (C)
+library(patchwork)
+  (fig_res_b0 + fig_res_b1_corr) /
+    fig_res_dev +
+  plot_annotation(tag_levels = "A")
+```
+
+In @fig-comparisons2 we see that the varying slope values are ordered by by-participant intercept value (maintaining the correlation visulation), and that the x-axis ranges are comparable. The only difference is htat in @fig-comparisons2 B, the population-level slope value (`r fixef(mod_lexdec)[2]`) is centred, whereas in the frequency facet in @fig-comparisons2 C, 0 is not quite centred. Let's compare this one last time to the deviance dotplot we get with `lattice::dotplot(ranef())` (@fig-lattice).
+
+```{r}
+#| label: fig-lattice
+#| fig-cap: "`lattice::dotplot(ranef(mod_lexdec))$Subject`"
+#| out-width: "100%"
+#| fig-asp: .6
+
+lattice::dotplot(ranef(mod_lexdec))$Subject
+```
+
+
+# Print session info
+
+```{r}
+sessionInfo()
+```
+
