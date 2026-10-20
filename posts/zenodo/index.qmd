@@ -10,21 +10,21 @@ execute:
 ---
 
 :::{.callout-tip}
-## TL;DR
+## tl;dr
 
 OSF Projects are being phased out in early 2027, and with them the easy anonymised view-only links for peer review. This post walks through my (current) replacement workflow for a project: anonymising locally, sharing code via an Anonymous GitHub mirror, and sharing data via a Zenodo draft with a secret link. Plus some GDPR caveats on why only fully anonymised data should go on Zenodo.
 :::
 
+This post is mainly relevant if OSF is part of your workflow, which it might not be. OSF is a common repository in psycholinguistics (my field of training), but it's not ubiquitous across all sub-fields, especially in Europe. I suspect this is partly because it's US-based, although you could choose a storage location in Frankfurt when creating a new project. Either way, the workflow below may still be useful for sharing materials with reviewers.
+
 ## Why this post
 
-The Center for Open Science is phasing out OSF Projects: new projects are no longer possible from November 16, 2026, and all existing projects become read-only on February 19, 2027 ([COS announcement](https://www.cos.io/osf-changes)). Pre-registrations and pre-prints stay, but OSF's anonymised view-only links for reviewers go with the projects.
+The Center for Open Science is phasing out OSF Projects: no new projects can be created from 16 November 2026, and all existing projects become read-only on 19 February 2027 ([COS announcement](https://www.cos.io/osf-changes)). Preregistrations and preprints stay, but OSF's anonymised view-only links for reviewers go with the projects. Several colleagues have mentioned this as a particular sticking point: how do we share materials anonymously with reviewers now?
 
 I recently had to share the code, data and rendered output of a Quarto book with anonymous reviewers, so I tried out two replacements:
 
 1. **Anonymous GitHub** ([anonymous.4open.science](https://anonymous.4open.science)): an anonymised mirror of a GitHub repo
 2. **A Zenodo draft** shared via a secret link
-
-I personally opted for sharing the Anonymous GitHub mirror with reviewers. Once the paper is accepted, though, GitHub isn't a suitable long-term home for research materials: it's proprietary (owned by Microsoft), isn't designed for permanent archiving, and doesn't provide a persistent identifier such as a DOI that unambiguously links to your materials. So I'd recommend Zenodo as the final home for your research code and data, with GitHub as the working space and the Zenodo archive as the citable record.
 
 :::{.callout-important collapse="true"}
 ### Zenodo and the GDPR: Caveat for EU-based researchers
@@ -53,6 +53,12 @@ In short: Zenodo is a great home for anonymised data, code and materials. Person
 :::
 
 Here's the workflow, including the snags I ran into.
+
+## Background: why is OSF changing?
+
+Since opening to the public in 2012, OSF has been a general-purpose project space, hosting preregistrations, preprints, and project repositories. In his [note to users](https://www.cos.io/blog/osf-changes-a-note-to-users), co-founder Brian Nosek explains that this flexibility became costly: maintaining so many use cases, plus fighting a constant flood of spam, left too little funding to improve the platform. Part of the problem was private storage. Around 63% of OSF projects (over 650,000) have never been made public, and almost 200,000 users have used OSF purely as free private storage. That doesn't serve the mission of open science, but still costs money to maintain.
+
+Reading this, I looked at my own OSF account and realised I was guilty of this myself: I had dormant private projects I barely remembered. Not research projects with data in them, but materials for ideas that never went anywhere.
 
 ## Before you start: the golden rule
 
