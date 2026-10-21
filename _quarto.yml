@@ -3,6 +3,7 @@ project:
 
 website:
   title: "R for Linguistics"
+  site-url: "https://daniela-palleschi.github.io/blog"
   navbar:
     right:
       - about.qmd

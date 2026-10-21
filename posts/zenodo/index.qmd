@@ -85,6 +85,8 @@ Here's my current workflow for sharing an anonymised repository with reviewers. 
 2. **During review:** an anonymised mirror of that repo, shared with reviewers via Anonymous GitHub
 3. **After acceptance:** the GitHub repo made public, with a release archived on Zenodo for a citable snapshot and DOI
 
+Note that this workflow leaves out two stages where OSF remains just as useful: preregistering a study during the planning phase, and posting a preprint (which, since it reveals the authors anyway, makes anonymisation during the peer review process somewhat moot). I want to stress that both remain highly valuable services from COS, and pillars of open science!
+
 ### Before you start: the golden rule
 
 Never push identifiable or personal data to GitHub, not even to a private repo. Only fully anonymised data should leave your institution's storage.
