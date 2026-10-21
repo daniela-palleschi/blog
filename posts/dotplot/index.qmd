@@ -3,7 +3,7 @@ title: "Visualising random effects"
 description: "Caterpillar plots with `lattice::dotplot()` and `ggplot2`"
 author: "Daniela Palleschi"
 date: "10/14/2024"
-date-modified: last-modified
+date-modified: "10/14/2024"
 categories: [linear mixed models, data visualisation]
 draft: false
 filters:
