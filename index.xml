@@ -9,8 +9,400 @@
 <link>https://daniela-palleschi.github.io/blog/</link>
 <atom:link href="https://daniela-palleschi.github.io/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
-<generator>quarto-1.4.553</generator>
-<lastBuildDate>Sun, 13 Oct 2024 22:00:00 GMT</lastBuildDate>
+<generator>quarto-1.9.37</generator>
+<lastBuildDate>Tue, 20 Oct 2026 22:00:00 GMT</lastBuildDate>
+<item>
+  <title>Life after the OSF: Sharing code and data for double-blind peer review</title>
+  <dc:creator>Daniela Palleschi</dc:creator>
+  <link>https://daniela-palleschi.github.io/blog/posts/zenodo/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>tl;dr
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>OSF Projects are being phased out in early 2027, and with them the easily anonymised view-only links for peer review. This post walks through my current replacement workflow: anonymising the project locally, sharing code and data with reviewers via an Anonymous GitHub mirror, and publishing on Zenodo after acceptance (via a GitHub release). It also covers some GDPR caveats: why only fully anonymised data should go on Zenodo (which is hosted outside the EU), and what that means for the wording in our participant consent forms.</p>
+</div>
+</div>
+<p>Click here to skip all the fluff and get straight to the workflow description.</p>
+<section id="why-this-post" class="level2">
+<h2 class="anchored" data-anchor-id="why-this-post">Why this post</h2>
+<p>The Center for Open Science is phasing out OSF Projects: no new projects can be created after November 16 2026, and all existing projects become read-only on February 19 2027 (<a href="https://www.cos.io/osf-changes">COS announcement</a>). Thankfully, pre-registrations and pre-prints stay, but OSF’s anonymised view-only links for reviewers vanish along with the projects. Though there are alternative repositories for sharing research data, currently none of them has as seamless a process as the OSF for sharing anonymised reviewer links. Several colleagues have mentioned this as a particular sticking point: how do we share materials anonymously with reviewers moving forward?</p>
+<p>I recently shared the code, data and rendered output of an analysis report (a Quarto book documenting my entire analysis workflow, with each chapter a separate Quarto document) with anonymous reviewers. Since we don’t know whether our paper will be accepted by February, I didn’t want to rely on setting up an OSF Project that might be read-only during the review process and need to be moved elsewhere. I took the opportunity to try out two replacements for sharing materials during double-blind review (once the paper is accepted, I’ll add the links to my anonymised repos):</p>
+<ol type="1">
+<li><strong>Anonymous GitHub mirror</strong> (<a href="https://anonymous.4open.science">anonymous.4open.science</a>): an anonymised mirror of a GitHub repo</li>
+<li><strong>A Zenodo draft</strong> shared via a secret link</li>
+</ol>
+<p>Importantly, these options are for the anonymous review phase only. For long-term public archiving, GitHub isn’t a viable option: it’s proprietary (owned by Microsoft), and it’s designed for software development, not for preserving research data. As such, it doesn’t provide a persistent identifier (PID) such as a DOI. I’d therefore recommend using a private GitHub repository during the active analysis phase, and archiving your materials in a repository designed for scholarly dissemination that issues a PID, such as Zenodo. As I’ll discuss below, GitHub integrates nicely with Zenodo, so you can use both and get the benefits of each.</p>
+<blockquote class="blockquote">
+<p>Full disclosure: this is the first time I’ve submitted a manuscript without an OSF repository, so I haven’t yet reached the “publish a GitHub release to Zenodo” stage. Hopefully the paper gets accepted soon and I can update this post :)</p>
+</blockquote>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Caveat for EU-based researchers: Zenodo and the GDPR
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>As a researcher and research data manager at an EU-based research institute (not to mention a member of the internal ethics committee), I must handle/advise my institute members to handle personal data in line with the General Data Protection Regulation <a href="https://gdpr-info.eu/">GDPR</a>. Under the GDPR, personal data can only leave the EU/EEA if the destination offers adequate protection, and many institutions (mine included) go a step further and require storage on EU servers.</p>
+<p>Zenodo’s servers are hosted by the European Organisation for Nuclear Research/Partical Physics, commonly known as <a href="https://home.cern/">CERN</a>, in Switzerland, which is not in the EU. At first glance, that seems fine: Switzerland has had an EU <a href="https://commission.europa.eu/law/law-topic/data-protection/international-dimension-data-protection/adequacy-decisions_en">adequacy decision</a> since 2000, reconfirmed in 2024, meaning personal data can flow there without additional safeguards.</p>
+<p>But Zenodo isn’t hosted by Switzerland, it’s hosted by CERN. As an intergovernmental organisation, CERN has its own privileges and immunities under international law, and processes personal data under its own internal rules (<a href="https://cds.cern.ch/record/2651311">Operational Circular 11</a>), which it describes as comparable to the GDPR. Comparable is not the same as equal, though. According to <a href="https://support.zenodo.org/help/en-gb/32-data-privacy">Zenodo’s own FAQ</a>, CERN:</p>
+<ul>
+<li>is not subject to the GDPR</li>
+<li>has no adequacy decision under <a href="https://gdpr-info.eu/art-45-gdpr/">Article 45 GDPR</a></li>
+<li>does not enter into Standard Contractual Clauses or other transfer instruments under <a href="https://gdpr-info.eu/art-46-gdpr/">Article 46 GDPR</a></li>
+</ul>
+<p>That leaves only the derogations in <a href="https://gdpr-info.eu/art-49-gdpr/">Article 49 GDPR</a>, such as the explicit consent of participants. CERN leaves that assessment to the uploading institute, which remains responsible for having a valid legal basis for the transfer and informing participants.</p>
+<p>The same caution applies to GitHub, of course, but many EU-based researchers seem to be turning to Zenodo as a GDPR-compliant alternative to OSF. As we’ve seen, that’s not quite accurate: CERN’s data protection rules are (currently) <em>comparable</em> to the GDPR, but CERN itself falls outside the GDPR’s jurisdiction. GitHub, on the other hand, isn’t usually seen as a home for research data in the first place, hence this lengthy info box focusing on Zenodo.</p>
+<section id="what-this-means-for-eu-based-researchers" class="level4">
+<h4 class="anchored" data-anchor-id="what-this-means-for-eu-based-researchers">What this means for EU-based researchers</h4>
+<ul>
+<li><strong>Article 49 derogations are meant for exceptional cases</strong> and are interpreted narrowly, so they’re not a sound basis for routinely uploading participant data. If you did want to rely on consent, it would have to be explicit consent to this specific transfer, planned from the consent form onwards, not added afterwards.</li>
+<li><strong>Pseudonymised data is still personal data</strong> under the GDPR, so replacing names with participant IDs doesn’t solve this.</li>
+<li><strong>Fully anonymised data falls outside the GDPR,</strong> so it can go on Zenodo without these concerns. Watch out for indirect identifiers, though (age, L1, place of birth, voice recordings, free text responses), especially with small or specific samples.</li>
+<li><strong>Your own name and affiliation in the Zenodo metadata are personal data too.</strong> That’s fine, since you’re consenting to publishing them yourself, but it shows that “no personal data on Zenodo” really means “no participant data”.</li>
+<li><strong>If in doubt, ask your data protection officer.</strong> Your institution’s policy may be stricter than the GDPR itself.</li>
+</ul>
+<p>In short: Zenodo is a great home for anonymised data, code and materials. Personally identifiable participant data stays on institutional (EU) storage.</p>
+</section>
+</div>
+</div>
+</div>
+</section>
+<section id="background-and-my-personal-reaction-why-is-osf-changing" class="level2">
+<h2 class="anchored" data-anchor-id="background-and-my-personal-reaction-why-is-osf-changing">Background and my personal reaction: why is OSF changing?</h2>
+<p>Since opening to the public in 2012, OSF has been a general-purpose project space, hosting preregistrations, preprints, and project repositories. In his <a href="https://www.cos.io/blog/osf-changes-a-note-to-users">note to users</a>, co-founder Brian Nosek explained that this flexibility became costly: maintaining so many use cases, plus fighting a constant flood of spam, left too little funding to improve the platform. Part of the problem was private storage. Around 63% of OSF projects (over 650,000) have never been made public, and almost 200,000 users have used OSF purely as free private storage. That doesn’t serve the mission of open science, but still costs money to maintain.</p>
+<p>Reading this, I looked at my own OSF account and realised I was guilty too (et tu, Brute?): I had dormant private projects I barely remembered. Not research projects with data in them, but materials for ideas that never went anywhere. A drop in the bucket, but clearly the bucket was overflowing.</p>
+<p>Still, I was rather shocked by the announcement. OSF has been a field-spanning mainstay across the research life cycle for years, and an integral part of my own research workflow. I read all the related announcements and posts from COS, and sent a (long-winded) email to my institute’s members in my capacity as research data manager, suggesting alternatives while trying not to let my own internal moral panic show. I scoured Reddit and Bluesky for reactions, but found surprisingly little (I even trudged back to the platform formerly known as Twitter, which admittedly hasn’t been the place for open science moral panic since you-know-what). Maybe I’m overreacting? Talking to colleagues, it didn’t seem so. Either way, it feels like a bad sign.</p>
+<p>I was struck by how fragile the funding behind it was. COS is a charity that relies mostly on philanthropic funding and institutional memberships, and its applications for US federal infrastructure funding (NSF) were unsuccessful. If a platform this widely used can’t secure stable funding, that should be a warning to all of us: open science infrastructure doesn’t maintain itself.</p>
+<p>As a Canadian living in Europe, I don’t see much risk to open science in my own work or local infrastructure, though as this whole topic shows, US decisions reach us anyway. Even if the response is to build and use more EU or non-US infrastructure, science is cumulative and community-driven, and as a whole it’s affected by what happens in the States. We all depend on the tools we share.</p>
+<p>That said, I’ll keep using OSF for pre-registrations (and for pre-prints, once I finally post one). It’s been a couple of months since OSF Projects were announced to be phased out, and I’ve moved on from moral panic to figuring out a new workflow with new tools. So, on a more optimistic note: here’s what we can do about it!</p>
+</section>
+<section id="workflow" class="level2">
+<h2 class="anchored" data-anchor-id="workflow">Workflow: sharing an anonymous repository</h2>
+<p>Here’s my current workflow for sharing an anonymised repository with reviewers. It has three stages:</p>
+<ol type="1">
+<li><strong>During development:</strong> a private GitHub repo for code and analyses</li>
+<li><strong>During review:</strong> an anonymised mirror of that repo, shared with reviewers via Anonymous GitHub</li>
+<li><strong>After acceptance:</strong> the GitHub repo made public, with a release archived on Zenodo for a citable snapshot and DOI</li>
+</ol>
+<section id="before-you-start-the-golden-rule" class="level3">
+<h3 class="anchored" data-anchor-id="before-you-start-the-golden-rule">Before you start: the golden rule</h3>
+<p>Never push identifiable or personal data to GitHub, not even to a private repo. Only fully anonymised data should leave your institution’s storage.</p>
+<p><strong>When is data anonymised?</strong> Data is anonymised when no one can identify the people in it, using any means reasonably likely to be used, taking into account cost, time and available technology (<a href="https://gdpr-info.eu/recitals/no-26/">GDPR Recital 26</a>). In practice, this means:</p>
+<ul>
+<li><strong>No key exists</strong> linking participant IDs back to people, anywhere</li>
+<li><strong>No combination of variables</strong> can single someone out. Indirect identifiers like age, L1, place of birth or rare language combinations can identify a person even without a name, especially in small samples</li>
+<li><strong>No inherently identifying data</strong> remains, such as voice recordings, videos, faces or free text responses</li>
+</ul>
+<p><strong>Pseudonymised data</strong> (names replaced with IDs, with a key stored elsewhere) still counts as personal data under the GDPR, so it stays on institutional storage.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>How anonymous is it, really?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>To see how quickly a few harmless-looking variables add up, try the <a href="https://ooa.world/">Observatory of Anonymity</a>. Enter a few demographics (e.g.&nbsp;birth date, gender, location) and it estimates how likely you are to be uniquely identified, based on census data from 89 countries (though not Germany, where I live). Everything runs in your browser, so nothing you enter is stored. The underlying study <span class="citation" data-cites="rocher2019">(Rocher et al., 2019)</span> found that 99.98% of Americans could be correctly re-identified in an “anonymised” dataset using just 15 demographic attributes.</p>
+</div>
+</div>
+<p>Now, on to the point of this post: sharing an anonymous repository with reviewers in the double-blind peer review process!</p>
+</section>
+<section id="during-development" class="level3">
+<h3 class="anchored" data-anchor-id="during-development">1. During development</h3>
+<section id="set-up-a-private-github-repo" class="level4">
+<h4 class="anchored" data-anchor-id="set-up-a-private-github-repo">Set up a private GitHub repo</h4>
+<p>Do this however you like. Some options: directly in GitHub, or from an existing Rproject in RStudio:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(usethis)</span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">use_github</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">private =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>)</span></code></pre></div></div>
+</div>
+<p>Keep data and build output out of the repo with a <code>.gitignore</code>. I <em>always</em> keep raw, identifiable data in its own unique folder. This way, I can very easily exclude everything in this folder from being track by git by adding it to the <code>.gitignore</code> file:</p>
+<pre><code>data/raw/*</code></pre>
+<p>Remember that anything you commit stays in your Git history, and anything you push stays in GitHub’s history, even after you delete the file. Removing it properly means rewriting the history (e.g.&nbsp;with <code>git filter-repo</code>) and, for pushed files, possibly contacting GitHub support to clear cached copies. Much easier to never commit it in the first place.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Copilot and your “private” repos
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>As of April 24 2026, GitHub uses Copilot interaction data (prompts, code snippets and context) from Free, Pro and Pro+ users to train its AI models, unless you opt out. GitHub says it doesn’t use private repository content “at rest”, but anything sent to Copilot while you work in a private repo, such as code or data snippets, can be collected.</p>
+<p>To opt out, go to <a href="https://github.com/settings/copilot/features">github.com/settings/copilot/features</a> and disable <strong>Allow GitHub to use my data for AI model training</strong>.</p>
+<p>This is one more reason to keep personal data out of GitHub entirely, and the same caution applies to any AI coding assistant in your editor: whatever it reads as context leaves your computer.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="during-review" class="level3">
+<h3 class="anchored" data-anchor-id="during-review">2. During review</h3>
+<p>Steps to set-up your repository for review: anonymise documents (wipe names, institutes) and choose an anonymous repository host.</p>
+<section id="anonymise-the-project" class="level4">
+<h4 class="anchored" data-anchor-id="anonymise-the-project">2.1 Anonymise the project</h4>
+<p>I use RStudio’s <strong>Find in Files</strong> (<code>Ctrl+Shift+F</code> / <code>Cmd+Shift+F</code>) with <strong>Replace All</strong>, swapping each identifier for a unique placeholder:</p>
+<ul>
+<li>your name → <code>ANON_AUTHOR</code></li>
+<li>email → <code>ANON_EMAIL</code></li>
+<li>also check initials, ORCID, GitHub username, institution and file paths like <code>/Users/yourname/...</code></li>
+</ul>
+<p>Unique placeholders make de-anonymising a simple reverse Replace All later.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If your README documents this process, write the placeholders there with hyphens (<code>ANON-AUTHOR</code>) instead of underscores. Otherwise the de-anonymising Replace All will also overwrite your instructions.</p>
+</div>
+</div>
+<p>Then re-render the PDF only, without touching the HTML:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">quarto</span> render <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--to</span> pdf</span></code></pre></div></div>
+<p>Check the PDF and any other binary files (Word, images, <code>.RData</code>, rendered HTML) by hand. Find in Files can’t search inside them, and neither can Anonymous GitHub.</p>
+<p>Commit and push.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Do I need this step?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If you only plan to use the Anonymous GitHub mirror, this step isn’t strictly necessary, since the website can replace names and other strings for you. However, it only works on text files. Binary files such as PDFs, Word documents, images and <code>.RData</code> files aren’t scrubbed, so a rendered PDF would still show your name.</p>
+<p>Anonymising locally and re-rendering fixes this, and it’s needed anyway if you also share a Zenodo draft. Doing both is the safest option.</p>
+</div>
+</div>
+</section>
+<section id="a-option-1-create-the-anonymous-github-mirror" class="level4">
+<h4 class="anchored" data-anchor-id="a-option-1-create-the-anonymous-github-mirror">2.2a Option 1: Create the Anonymous GitHub mirror</h4>
+<ol type="1">
+<li>Make sure your GitHub repo is private for the review period, so reviewers can’t find it by searching for a distinctive title or code snippet.</li>
+<li>Log in at <a href="https://anonymous.4open.science">anonymous.4open.science</a> with GitHub and select the repo.</li>
+<li>Add terms to hide. Regex works, which saves listing every variant, e.g.&nbsp;to anonymise all mention of my name or the name of my institute (ZAS):</li>
+</ol>
+<pre><code>[Dd]aniela ?[Pp]alleschi
+\bZAS\b</code></pre>
+<ol start="4" type="1">
+<li>Optionally set an expiry date that covers the review period.</li>
+<li>Open the resulting link in a private window (e.g., in incognito mode) and check everything.</li>
+</ol>
+<p><strong>Snags I hit:</strong></p>
+<ul>
+<li><strong>Blank plots in the PDF viewer.</strong> Some geom layers didn’t show up in Anonymous GitHub’s PDF preview. Rasterising the figures for the PDF output fixed it:</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb5-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">format</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span></span>
+<span id="cb5-2"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pdf</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span></span>
+<span id="cb5-3"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">fig-format</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> png</span></span>
+<span id="cb5-4"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">fig-dpi</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">300</span></span></code></pre></div></div>
+<ul>
+<li><strong>GitHub Pages.</strong> The tool can serve an anonymised Pages site, but on a free GitHub plan Pages needs a public repo, and the Pages site itself is always public. For a private repo, I’d skip Pages and let reviewers use the file browser and PDF.</li>
+<li><strong>Stale settings.</strong> If the tool shows confusing errors about branches, a full refresh or re-pasting the repo URL clears its cached state.</li>
+</ul>
+<p><strong>Keep in mind:</strong> it’s a free academic tool, not an audited service, and it only hides what you tell it to. Fine for code and anonymised data, not for anything sensitive.</p>
+</section>
+<section id="b-option-2-share-a-zenodo-draft" class="level4">
+<h4 class="anchored" data-anchor-id="b-option-2-share-a-zenodo-draft">2.2b Option 2: share a Zenodo draft</h4>
+<p>If you’re not familiar with GitHub, or you want the review version to become your published record, use a Zenodo draft instead (or as well). You get a reserved DOI to cite from the start, and after acceptance you simply add the author details and publish the same record.</p>
+<ol type="1">
+<li>If you’ve got everything already on GitHub, click <strong>Code &gt; Download ZIP</strong>. This gives you the full folder structure without the <code>.git</code> history.</li>
+<li>On Zenodo, click <strong>New upload</strong>, add the ZIP any relevant PDF (for in-browswer viewing; e.g., my Analysis Report Quarto book), and enter “Anonymous” as creator. Leave out affiliations, grant numbers and anything else identifying.</li>
+<li>Reserve a DOI, then <strong>Save draft</strong>. Do not publish.</li>
+<li>On the draft, go to <strong>Share &gt; Links</strong> and create a link with <strong>Can preview</strong> permission (<a href="https://help.zenodo.org/docs/share/about">Zenodo docs</a>).</li>
+<li>Test the link in a private window while logged out.</li>
+</ol>
+<p>Because the record is never published in its anonymised form, the anonymous version doesn’t end up permanently in the record’s version history.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Planning to archive via GitHub later?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Zenodo’s GitHub archiving always creates a new record with its own DOI. It can’t publish into an existing draft. So if you’d like future GitHub releases archived automatically, the Anonymous GitHub route is the better fit. With a Zenodo draft, you’d add future versions to the record by hand to keep one DOI.</p>
+</div>
+</div>
+</section>
+<section id="link-it-in-the-paper" class="level4">
+<h4 class="anchored" data-anchor-id="link-it-in-the-paper">2.3 Link it in the paper</h4>
+<p>Add the link to your paper (example LaTeX syntax with an anonymous.4open.science URL):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode latex code-with-copy"><code class="sourceCode latex"><span id="cb6-1">All data and code are available in an <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">\href</span>{https://anonymous.4open.science/r/your-repo-id}{anonymised repository}.</span></code></pre></div></div>
+</section>
+</section>
+<section id="after-acceptance" class="level3">
+<h3 class="anchored" data-anchor-id="after-acceptance">3. After acceptance</h3>
+<p>After your manuscript is accepted (yay!), you de-anonymise the documents (adding names/institutes back in), and share in a public repository.</p>
+<section id="de-anonymise-the-project" class="level4">
+<h4 class="anchored" data-anchor-id="de-anonymise-the-project">3.1 De-anonymise the project</h4>
+<ol type="1">
+<li>Use <strong>Find in Files</strong> to search for <code>ANON_AUTHOR</code> (and other placeholders), and <strong>Replace All</strong> with the original text.</li>
+<li>Re-render the PDF, then commit and push.</li>
+</ol>
+</section>
+<section id="a-if-you-shared-an-anonymous-github-mirror" class="level4">
+<h4 class="anchored" data-anchor-id="a-if-you-shared-an-anonymous-github-mirror">3.2a If you shared an Anonymous GitHub mirror</h4>
+<p>No Zenodo record exists yet; Zenodo creates one from your GitHub release.</p>
+<ol type="1">
+<li>Make the GitHub repo public (Zenodo’s GitHub integration only works with public repos).</li>
+<li>Log in to Zenodo (or sign up) and connect your GitHub account under <strong>Settings &gt; GitHub</strong>.</li>
+<li>In the list of repos, switch on archiving for this one.</li>
+<li>Create a release on GitHub. Zenodo automatically archives it and assigns a DOI.</li>
+<li>Cite the Zenodo <strong>concept DOI</strong> in the final paper, so it always points to the latest version.</li>
+<li>Delete the Anonymous GitHub mirror.</li>
+</ol>
+</section>
+<section id="b-if-you-shared-a-zenodo-draft" class="level4">
+<h4 class="anchored" data-anchor-id="b-if-you-shared-a-zenodo-draft">3.2b If you shared a Zenodo draft</h4>
+<ol type="1">
+<li>Replace the anonymised files with the de-anonymised version.</li>
+<li>Replace “Anonymous” with the real authors, affiliations and funding.</li>
+<li>Publish. The reserved DOI you cited in the manuscript becomes active.</li>
+<li>Delete the secret link.</li>
+</ol>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If your project is also on GitHub, add future versions to this Zenodo record by hand. Zenodo’s GitHub archiving would create a separate record with a different DOI.</p>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="wrap-up" class="level2">
+<h2 class="anchored" data-anchor-id="wrap-up">Wrap-up</h2>
+<p>Though this process is more effort than ticking “anonymise” on an OSF view-only link, most of the work (placeholders, README instructions, <code>.gitignore</code>) only needs setting up once per project.</p>
+<p>I personally use GitHub a lot, but I’m more hesitant to push research data there, and have gladly used an institutional GitLab instance for this in the past (shout out to the HU Berlin; if you have a HU account check it out: <a href="https://scm.cms.hu-berlin.de/">https://scm.cms.hu-berlin.de/</a>). Zenodo’s GitHub integration is fairly seamless, but it lacks the simplicity of OSF’s one-click anonymisation. Then again, uploading and organising files on OSF was a pain. Zenodo has no folder structure at all: you simply upload single files or zipped folders. That keeps uploading simple, but means files inside a zip can’t be opened in the browser, they’re only listed. You win some, you lose some.</p>
+<p>With OSF stepping back as a repository, I hope Zenodo will make anonymised sharing for review easier, making this whole post obsolete. Until then, we work with what we’ve got.</p>
+</section>
+<section id="honourable-mentions" class="level2">
+<h2 class="anchored" data-anchor-id="honourable-mentions">Honourable mentions</h2>
+<p>An honourable mention goes to <a href="https://codeberg.org">Codeberg</a> and <a href="https://gitlab.com">GitLab</a>, open source alternatives to GitHub (which is proprietary and owned by Microsoft). Just note that both Anonymous GitHub and Zenodo’s automatic archiving only work with GitHub, so with these you’d upload snapshots to Zenodo manually.</p>
+<p>A few other repositories worth knowing about, which I’m aware of but haven’t used myself (COS itself points to Dataverse, Dryad and Figshare as alternatives):</p>
+<ul>
+<li><strong>Dataverse</strong> installations can offer anonymised private URLs for double-blind review (since version 5.6), which hide the depositor’s identifying metadata. Whether this is switched on depends on the installation. For linguists, <a href="https://dataverse.no/dataverse/trolling">TROLLing</a> (the Tromsø Repository of Language and Linguistics, part of DataverseNO) is a good option, and as Norway is in the EEA, the GDPR applies.</li>
+<li><strong>Dryad</strong> has a dedicated “Private for Peer Review” mode with a randomised, de-identified reviewer link. Note that it charges data publishing fees unless your institution or journal covers them.</li>
+<li><strong>Figshare</strong> offers private links for peer review, but it’s a commercial platform.</li>
+<li><strong>CLARIN centres</strong> are specialised repositories for language resources, with EU-based infrastructure. They’re more suited to long-term archiving of corpora and recordings than to quick sharing for review.</li>
+</ul>
+</section>
+<section id="writing-assistance" class="level2">
+<h2 class="anchored" data-anchor-id="writing-assistance">Writing assistance</h2>
+<p><em>Claude Opus 5.5 (Anthropic) helped draft the workflow sections and edit the text. The opinions, experiences and final wording are my own, and all content was fact-checked by me. For example, I added the callout box “How anonymous is it, really?” to link to the Observatory of Anonymity, which I’d learned about in a research data management workshop. Claude pointed me to the underlying study by <span class="citation" data-cites="rocher2019">Rocher et al. (2019)</span>, and I then looked it up to verify the reporting was accurate.</em></p>
+
+
+<!-- -->
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2">
+<div id="ref-rocher2019" class="csl-entry">
+Rocher, L., Hendrickx, J. M., &amp; Montjoye, Y.-A. de. (2019). Estimating the success of re-identifications in incomplete datasets using generative models. <em>Nature Communications</em>, <em>10</em>, 3069. <a href="https://doi.org/10.1038/s41467-019-10933-3">https://doi.org/10.1038/s41467-019-10933-3</a>
+</div>
+</div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{palleschi2026,
+  author = {Palleschi, Daniela},
+  title = {Life After the {OSF:} {Sharing} Code and Data for
+    Double-Blind Peer Review},
+  date = {2026-10-21},
+  url = {https://daniela-palleschi.github.io/blog/posts/zenodo/},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-palleschi2026" class="csl-entry quarto-appendix-citeas">
+Palleschi, D. (2026, October 21). <em>Life after the OSF: Sharing code
+and data for double-blind peer review</em>. <a href="https://daniela-palleschi.github.io/blog/posts/zenodo/">https://daniela-palleschi.github.io/blog/posts/zenodo/</a>
+</div></div></section></div> ]]></description>
+  <category>open science</category>
+  <category>reproducibility</category>
+  <category>GitHub</category>
+  <category>Zenodo</category>
+  <category>Quarto</category>
+  <guid>https://daniela-palleschi.github.io/blog/posts/zenodo/</guid>
+  <pubDate>Tue, 20 Oct 2026 22:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Visualising random effects</title>
   <dc:creator>Daniela Palleschi</dc:creator>
@@ -29,7 +421,7 @@
 <h2 class="anchored" data-anchor-id="packages">Packages</h2>
 <p>Required packages for reproducible example:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="do" style="color: #5E5E5E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="do" style="color: #5E5E5E;
 background-color: null;
 font-style: italic;">## install 'pacman' if you don't have it</span></span>
 <span id="cb1-2"><span class="co" style="color: #5E5E5E;
@@ -59,26 +451,26 @@ font-style: inherit;"># fitting our model</span></span>
 <span id="cb1-10">  lattice <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># for the caterpillar plots</span></span>
-<span id="cb1-11">)</span></code></pre></div>
+<span id="cb1-11">)</span></code></pre></div></div>
 </div>
 </section>
 <section id="load-data" class="level2">
 <h2 class="anchored" data-anchor-id="load-data">Load data</h2>
 <p>We’ll use a dataset from the <code>languageR</code> dataset <span class="citation" data-cites="languageR">(Baayen &amp; Shafaei-Bajestan, 2019)</span>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">df_lexdec <span class="ot" style="color: #003B4F;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">df_lexdec <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> languageR<span class="sc" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">::</span>lexdec</span></code></pre></div>
+font-style: inherit;">::</span>lexdec</span></code></pre></div></div>
 </div>
 <section id="inspect-dataset" class="level3">
 <h3 class="anchored" data-anchor-id="inspect-dataset">Inspect dataset</h3>
 <p>Check out the variable names:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">names</span>(df_lexdec)</span></code></pre></div>
+font-style: inherit;">names</span>(df_lexdec)</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code> [1] "Subject"        "RT"             "Trial"          "Sex"           
  [5] "NativeLanguage" "Correct"        "PrevType"       "PrevCorrect"   
@@ -91,7 +483,7 @@ font-style: inherit;">names</span>(df_lexdec)</span></code></pre></div>
 </div>
 <p>Let’s look at the first few rows of some selected columns:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">head</span>(df_lexdec[<span class="fu" style="color: #4758AB;
 background-color: null;
@@ -103,7 +495,7 @@ font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">5</span>,<span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">9</span>)])</span></code></pre></div>
+font-style: inherit;">9</span>)])</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code>  Subject       RT Trial Sex NativeLanguage       Word
 1      A1 6.340359    23   F        English        owl
@@ -116,26 +508,26 @@ font-style: inherit;">9</span>)])</span></code></pre></div>
 </div>
 <p>How many participants?</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">length</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">unique</span>(df_lexdec<span class="sc" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">$</span>Subject))</span></code></pre></div>
+font-style: inherit;">$</span>Subject))</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code>[1] 21</code></pre>
 </div>
 </div>
 <p>There are 21 participants in this dataset. How many unique words were there?</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">length</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">unique</span>(df_lexdec<span class="sc" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">$</span>Word))</span></code></pre></div>
+font-style: inherit;">$</span>Word))</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code>[1] 79</code></pre>
 </div>
@@ -143,7 +535,7 @@ font-style: inherit;">$</span>Word))</span></code></pre></div>
 <p>There are 79 words.</p>
 <p>How many observations (rows) per participant?</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1">df_lexdec <span class="sc" style="color: #5E5E5E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1">df_lexdec <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
 <span id="cb11-2">  dplyr<span class="sc" style="color: #5E5E5E;
@@ -159,7 +551,7 @@ font-style: inherit;">count</span>(n, <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">name =</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"Subject"</span>)</span></code></pre></div>
+font-style: inherit;">"Subject"</span>)</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code>   n Subject
 1 79      21</code></pre>
@@ -167,7 +559,7 @@ font-style: inherit;">"Subject"</span>)</span></code></pre></div>
 </div>
 <p>We see that all 21 participants had 79 observations, i.e., this was a repeated measures design. This is nice and clean, as 79 x 21 equals the number of observations in the dataset (1659):</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><span class="dv" style="color: #AD0000;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">79</span><span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -177,7 +569,7 @@ font-style: inherit;">21</span> <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">==</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">nrow</span>(df_lexdec)</span></code></pre></div>
+font-style: inherit;">nrow</span>(df_lexdec)</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code>[1] TRUE</code></pre>
 </div>
@@ -189,18 +581,18 @@ font-style: inherit;">nrow</span>(df_lexdec)</span></code></pre></div>
 <h2 class="anchored" data-anchor-id="fit-mixed-effects-model">Fit mixed effects model</h2>
 <p>We’ll ignore a lot of steps for the sake of simplicity here (e.g., transforming variables). I will just set the two-level factor <code>NativeLanguageOther</code> to sum contrast coding.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">levels</span>(df_lexdec<span class="sc" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">$</span>NativeLanguage)</span></code></pre></div>
+font-style: inherit;">$</span>NativeLanguage)</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code>[1] "English" "Other"  </code></pre>
 </div>
 </div>
 <p>I see that the level <code>English</code> comes first. I want to set this to -0.5, and <code>Other</code> to +0.5. I do that like so:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">contrasts</span>(df_lexdec<span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -216,15 +608,15 @@ font-style: inherit;">0.5</span>, <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span><span class="fl" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">0.5</span>)</span></code></pre></div>
+font-style: inherit;">0.5</span>)</span></code></pre></div></div>
 </div>
 <p>And I check the contrasts:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">contrasts</span>(df_lexdec<span class="sc" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">$</span>NativeLanguage)</span></code></pre></div>
+font-style: inherit;">$</span>NativeLanguage)</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code>        [,1]
 English -0.5
@@ -233,7 +625,7 @@ Other    0.5</code></pre>
 </div>
 <p>Let’s fit a linear mixed model with log reaction times (<code>RT</code>) as predicted by word frequency (<code>Frequency</code>), with by-participant (<code>Subject</code>) and by-word (<code>Word</code>) varying intercepts and slopes.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1">mod_lexdec <span class="ot" style="color: #003B4F;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1">mod_lexdec <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span></span>
 <span id="cb20-2">  <span class="fu" style="color: #4758AB;
@@ -273,15 +665,15 @@ background-color: null;
 font-style: inherit;">optimizer =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"bobyqa"</span>)</span>
-<span id="cb20-7">       )</span></code></pre></div>
+<span id="cb20-7">       )</span></code></pre></div></div>
 </div>
 <p>First: note we have a single varying slope for participant and word each. The effect of <code>Frequency</code> is allowed to vary between participants because each participant contributed data points for words of different frequencies (presumably). The effect of <code>NativeLanguage</code> is allowed to vary between words because we have data points from different NativeLanguage levels (English, Other) for each word (presumably). Importantly, <code>NativeLanguage</code> does not vary within a single subject, nor does word frequency vary within a single word.</p>
 <section id="inspect-model" class="level3">
 <h3 class="anchored" data-anchor-id="inspect-model">Inspect model</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">summary</span>(mod_lexdec)</span></code></pre></div>
+font-style: inherit;">summary</span>(mod_lexdec)</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code>Linear mixed model fit by REML ['lmerMod']
 Formula: RT ~ Frequency + NativeLanguage + (1 + Frequency | Subject) +  
@@ -299,7 +691,7 @@ Random effects:
  Groups   Name            Variance  Std.Dev. Corr 
  Word     (Intercept)     0.0032648 0.05714       
           NativeLanguage1 0.0014730 0.03838  0.87 
- Subject  (Intercept)     0.0462392 0.21503       
+ Subject  (Intercept)     0.0462386 0.21503       
           Frequency       0.0003824 0.01956  -0.88
  Residual                 0.0288063 0.16972       
 Number of obs: 1659, groups:  Word, 79; Subject, 21
@@ -308,7 +700,7 @@ Fixed effects:
                  Estimate Std. Error t value
 (Intercept)      6.580171   0.054611 120.492
 Frequency       -0.039879   0.007122  -5.599
-NativeLanguage1  0.078591   0.054036   1.454
+NativeLanguage1  0.078592   0.054036   1.454
 
 Correlation of Fixed Effects:
             (Intr) Frqncy
@@ -324,52 +716,52 @@ NativeLngg1  0.015  0.103</code></pre>
 <h1>Random effects</h1>
 <p>We have our model (log-transformed reaction times to a lexical decision task, with the predictors log word-frequency and native language (English or Other), with by-participant and -word varying intercepts and relevant slopes). We can now inspect the random effects and the variance-covariance matrix:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">VarCorr</span>(mod_lexdec)</span></code></pre></div>
+font-style: inherit;">VarCorr</span>(mod_lexdec)</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code> Groups   Name            Std.Dev. Corr  
  Word     (Intercept)     0.057138       
           NativeLanguage1 0.038380 0.874 
- Subject  (Intercept)     0.215033       
+ Subject  (Intercept)     0.215032       
           Frequency       0.019556 -0.877
  Residual                 0.169724       </code></pre>
 </div>
 </div>
 <p>We can get the divergence of each level of our grouping factors from the population-level estimates:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">ranef</span>(mod_lexdec)<span class="sc" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">$</span>Subject</span></code></pre></div>
+font-style: inherit;">$</span>Subject</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
-<pre data-code-line-numbers=""><code>   (Intercept)    Frequency
-A1 -0.06030434 -0.002225118
-A2 -0.18962011  0.012808359
-A3 -0.06664596  0.007215187
-C  -0.09377256  0.013360695
-D  -0.06141405  0.007791002
-I  -0.18734793  0.003322303
-J  -0.25375506  0.017144780
-K  -0.22563204  0.014716247
-M1 -0.29229286  0.024423175
-M2  0.25110987 -0.030896854
-P   0.08034423 -0.016514150
-R1 -0.14261336  0.020339383
-R2  0.12464133 -0.001590354
-R3  0.04157428 -0.000295286
-S   0.03561165 -0.002866907
-T1  0.02619380 -0.003088784
-T2  0.52058576 -0.031667339
-V   0.17933022 -0.005539944
-W1 -0.13602833  0.010464804
-W2  0.12954545 -0.004904427
-Z   0.32049000 -0.031996772</code></pre>
+<pre data-code-line-numbers=""><code>   (Intercept)     Frequency
+A1 -0.06030375 -0.0022251726
+A2 -0.18961934  0.0128082682
+A3 -0.06664645  0.0072151968
+C  -0.09377199  0.0133606502
+D  -0.06141455  0.0077910152
+I  -0.18734814  0.0033222496
+J  -0.25375520  0.0171447182
+K  -0.22563120  0.0147161419
+M1 -0.29229193  0.0244230548
+M2  0.25110892 -0.0308967558
+P   0.08034356 -0.0165141088
+R1 -0.14261273  0.0203393261
+R2  0.12464152 -0.0015903198
+R3  0.04157464 -0.0002952893
+S   0.03561203 -0.0028669170
+T1  0.02619421 -0.0030887987
+T2  0.52058423 -0.0316671149
+V   0.17932927 -0.0055398389
+W1 -0.13602765  0.0104647342
+W2  0.12954564 -0.0049043959
+Z   0.32048890 -0.0319966434</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb27" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">head</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
@@ -379,56 +771,56 @@ font-style: inherit;">$</span>Word, <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">n =</span> <span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">10</span>)</span></code></pre></div>
+font-style: inherit;">10</span>)</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
-<pre data-code-line-numbers=""><code>          (Intercept) NativeLanguage1
-almond     0.03189380     0.026225594
-ant       -0.03488174    -0.024627221
-apple     -0.05880401    -0.035793145
-apricot   -0.04958071    -0.033361954
-asparagus  0.03067198     0.013473878
-avocado   -0.02484386    -0.014486658
-banana    -0.05982876    -0.046064580
-bat       -0.02423175    -0.015256594
-beaver     0.00611629     0.005906481
-bee       -0.03759044    -0.023041860</code></pre>
+<pre data-code-line-numbers=""><code>           (Intercept) NativeLanguage1
+almond     0.031893857     0.026225657
+ant       -0.034881769    -0.024627296
+apple     -0.058804048    -0.035793293
+apricot   -0.049580693    -0.033362022
+asparagus  0.030671971     0.013473970
+avocado   -0.024843813    -0.014486677
+banana    -0.059828824    -0.046064685
+bat       -0.024231784    -0.015256666
+beaver     0.006116328     0.005906508
+bee       -0.037590463    -0.023041954</code></pre>
 </div>
 </div>
 <p>I’ve printed just the first 10 words to avoid printing all 79. Notice the values consist of a mix of positive and negative values. This is because the population-level estimate (i.e., the fixed effects) lies in the middle of all the observations. These are the <em>deviances</em>, i.e., how each participant’s or word’s fitted intercept or slope value deviates from the population-level value.</p>
 <p>We can also print the actual fitted values:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">coef</span>(mod_lexdec)<span class="sc" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">$</span>Subject</span></code></pre></div>
+font-style: inherit;">$</span>Subject</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code>   (Intercept)   Frequency NativeLanguage1
-A1    6.519867 -0.04210380      0.07859106
-A2    6.390551 -0.02707032      0.07859106
-A3    6.513525 -0.03266350      0.07859106
-C     6.486399 -0.02651799      0.07859106
-D     6.518757 -0.03208768      0.07859106
-I     6.392823 -0.03655638      0.07859106
-J     6.326416 -0.02273390      0.07859106
-K     6.354539 -0.02516244      0.07859106
-M1    6.287879 -0.01545551      0.07859106
-M2    6.831281 -0.07077554      0.07859106
-P     6.660516 -0.05639283      0.07859106
-R1    6.437558 -0.01953930      0.07859106
-R2    6.704813 -0.04146904      0.07859106
-R3    6.621746 -0.04017397      0.07859106
-S     6.615783 -0.04274559      0.07859106
-T1    6.606365 -0.04296747      0.07859106
-T2    7.100757 -0.07154602      0.07859106
-V     6.759502 -0.04541863      0.07859106
-W1    6.444143 -0.02941388      0.07859106
-W2    6.709717 -0.04478311      0.07859106
-Z     6.900661 -0.07187546      0.07859106</code></pre>
+A1    6.519868 -0.04210382      0.07859187
+A2    6.390552 -0.02707038      0.07859187
+A3    6.513525 -0.03266345      0.07859187
+C     6.486399 -0.02651800      0.07859187
+D     6.518757 -0.03208764      0.07859187
+I     6.392823 -0.03655640      0.07859187
+J     6.326416 -0.02273393      0.07859187
+K     6.354540 -0.02516251      0.07859187
+M1    6.287879 -0.01545560      0.07859187
+M2    6.831280 -0.07077541      0.07859187
+P     6.660515 -0.05639276      0.07859187
+R1    6.437559 -0.01953933      0.07859187
+R2    6.704813 -0.04146897      0.07859187
+R3    6.621746 -0.04017394      0.07859187
+S     6.615783 -0.04274557      0.07859187
+T1    6.606366 -0.04296745      0.07859187
+T2    7.100756 -0.07154577      0.07859187
+V     6.759501 -0.04541849      0.07859187
+W1    6.444144 -0.02941392      0.07859187
+W2    6.709717 -0.04478305      0.07859187
+Z     6.900660 -0.07187529      0.07859187</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb31" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">head</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
@@ -438,19 +830,19 @@ font-style: inherit;">$</span>Word, <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">n =</span> <span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">10</span>)</span></code></pre></div>
+font-style: inherit;">10</span>)</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code>          (Intercept)   Frequency NativeLanguage1
-almond       6.612065 -0.03987868      0.10481666
-ant          6.545290 -0.03987868      0.05396384
-apple        6.521367 -0.03987868      0.04279792
-apricot      6.530591 -0.03987868      0.04522911
-asparagus    6.610843 -0.03987868      0.09206494
-avocado      6.555328 -0.03987868      0.06410440
-banana       6.520343 -0.03987868      0.03252648
-bat          6.555940 -0.03987868      0.06333447
-beaver       6.586288 -0.03987868      0.08449754
-bee          6.542581 -0.03987868      0.05554920</code></pre>
+almond       6.612065 -0.03987865      0.10481753
+ant          6.545290 -0.03987865      0.05396457
+apple        6.521367 -0.03987865      0.04279858
+apricot      6.530591 -0.03987865      0.04522985
+asparagus    6.610843 -0.03987865      0.09206584
+avocado      6.555328 -0.03987865      0.06410519
+banana       6.520342 -0.03987865      0.03252718
+bat          6.555940 -0.03987865      0.06333520
+beaver       6.586288 -0.03987865      0.08449838
+bee          6.542581 -0.03987865      0.05554991</code></pre>
 </div>
 </div>
 <p>Note that these are now much closer to the fixed effects (population-level values). Importantly, see that the slopes that we did <em>not</em> allow to vary are the same across the relevant grouping factor. That’s because we told our model that these effects do not vary between the levels of the relevant grouping factors (e.g., the effect of <code>NativeLanguage</code> does not vary within participant).</p>
@@ -459,15 +851,15 @@ bee          6.542581 -0.03987868      0.05554920</code></pre>
 <p>Finally, the point of this blog post: visualising the random effects.</p>
 <p>Print just the by-subject random effects deviances:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">dotplot</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">ranef</span>(mod_lexdec))<span class="sc" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">$</span>Subject</span></code></pre></div>
+font-style: inherit;">$</span>Subject</span></code></pre></div></div>
 <div class="cell-output-display">
-<div id="fig-ranef1" class="quarto-figure quarto-figure-center quarto-float anchored">
+<div id="fig-ranef1" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-ranef1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="https://daniela-palleschi.github.io/blog/posts/dotplot/index_files/figure-html/fig-ranef1-1.png" class="img-fluid figure-img" width="672">
@@ -481,15 +873,15 @@ Figure&nbsp;1: By-subject random effects deviances
 </div>
 <p>Print just the by-word random effects:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb34" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">dotplot</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">ranef</span>(mod_lexdec))<span class="sc" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">$</span>Word</span></code></pre></div>
+font-style: inherit;">$</span>Word</span></code></pre></div></div>
 <div class="cell-output-display">
-<div id="fig-ranef2" class="quarto-figure quarto-figure-center quarto-float anchored">
+<div id="fig-ranef2" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-ranef2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="https://daniela-palleschi.github.io/blog/posts/dotplot/index_files/figure-html/fig-ranef2-1.png" class="img-fluid figure-img" width="672">
@@ -501,14 +893,14 @@ Figure&nbsp;2: By-word random effects deviances
 </div>
 </div>
 </div>
-<p>In these plots, 0 on the x-axis corresponds to the population-level values. So, the <code>(Intercept)</code>, 0 corresponds to the intercept value in the model coefficients (6.5801714):</p>
+<p>In these plots, 0 on the x-axis corresponds to the population-level values. So, the <code>(Intercept)</code>, 0 corresponds to the intercept value in the model coefficients (6.5801713):</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb35" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">fixef</span>(mod_lexdec)</span></code></pre></div>
+font-style: inherit;">fixef</span>(mod_lexdec)</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code>    (Intercept)       Frequency NativeLanguage1 
-     6.58017141     -0.03987868      0.07859106 </code></pre>
+     6.58017131     -0.03987865      0.07859187 </code></pre>
 </div>
 </div>
 <p>For most cases, we can just stop here. These plots give us everything we need.</p>
@@ -518,7 +910,7 @@ font-style: inherit;">fixef</span>(mod_lexdec)</span></code></pre></div>
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Deviances from population-level
+<span class="screen-reader-only">Note</span>Deviances from population-level
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -532,17 +924,17 @@ Deviances from population-level
 <p>We could also produce these plots by hand to (potentially) facilitate the interpretation of the random effects. We won’t really get any new information here, but we can visualise the same information differently. These steps require more experience with the infrastructure of an <code>lmer()</code> model, as well as <code>dplyr</code>, <code>tidyr</code>, and <code>ggplot2</code> syntax. You can ignore the coding part and just look at the produced plots to see if these aid in the interpretation of the random effects.</p>
 <p>We’ll use the <code>broom.mixed</code> and <code>ggplot2</code> packages.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb37" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1">pacman<span class="sc" style="color: #5E5E5E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1">pacman<span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">p_load</span>(</span>
 <span id="cb37-2">  ggplot2,</span>
 <span id="cb37-3">  broom.mixed</span>
-<span id="cb37-4">)</span></code></pre></div>
+<span id="cb37-4">)</span></code></pre></div></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb38" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1">fig_res_dev <span class="ot" style="color: #003B4F;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1">fig_res_dev <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span></span>
 <span id="cb38-2">  <span class="co" style="color: #5E5E5E;
@@ -672,12 +1064,12 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span id="cb38-21">  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">theme_bw</span>()</span></code></pre></div>
+font-style: inherit;">theme_bw</span>()</span></code></pre></div></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb39" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1">fig_res_dev</span></code></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1">fig_res_dev</span></code></pre></div></div>
 <div class="cell-output-display">
-<div id="fig-ggplot2_ranef" class="quarto-figure quarto-figure-center quarto-float anchored">
+<div id="fig-ggplot2_ranef" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-ggplot2_ranef-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="https://daniela-palleschi.github.io/blog/posts/dotplot/index_files/figure-html/fig-ggplot2_ranef-1.png" class="img-fluid figure-img" width="672">
@@ -693,18 +1085,18 @@ Figure&nbsp;3: Caterpillar plot of by-participant varying intercepts and slopes 
 <h3 class="anchored" data-anchor-id="visualising-fitted-values">Visualising fitted values</h3>
 <p>We can also shift the x-axis by the population-level estimates so that we have the fitted random effects values rather than the deviances from the population-level estimates. We do this by adding a line of code that (see code annotation 1. below) and moving the red dotted line to cross at the population-level intercept value (see code annodtation 2. below). We’ll do this by directly accessing the Intercept value from our model using:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb40" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">fixef</span>(mod_lexdec)[<span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">1</span>]</span></code></pre></div>
+font-style: inherit;">1</span>]</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code>(Intercept) 
    6.580171 </code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="annotated-cell-26" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-26-1">fig_res_b0 <span class="ot" style="color: #003B4F;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="annotated-cell-26" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-26-1">fig_res_b0 <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span></span>
 <span id="annotated-cell-26-2">  <span class="co" style="color: #5E5E5E;
@@ -855,7 +1247,7 @@ background-color: null;
 font-style: inherit;"># beautify</span></span>
 <span id="annotated-cell-26-24">  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">theme_bw</span>()</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div>
+font-style: inherit;">theme_bw</span>()</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div></div>
 <div class="cell-annotation">
 <dl class="code-annotation-container-grid">
 <dt data-target-cell="annotated-cell-26" data-target-annotation="1">1</dt>
@@ -875,18 +1267,18 @@ font-style: inherit;">theme_bw</span>()</span><div class="code-annotation-gutter
 </div>
 <p>We do this separately for the varying intercept and for the varying slope(s) because the population-levels we add differ. Now we want to adjust each by-participant varying slope (<code>Frequency</code>) by replacing <code>fixef(mod_lexdec)[1]</code> with <code>fixef(mod_lexdec)[2]</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb42" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">fixef</span>(mod_lexdec)[<span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">2</span>]</span></code></pre></div>
+font-style: inherit;">2</span>]</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code>  Frequency 
--0.03987868 </code></pre>
+-0.03987865 </code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb44" data-source-line-numbers="nil" data-code-line-numbers="4,7,17" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1">fig_res_b1 <span class="ot" style="color: #003B4F;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44" data-source-line-numbers="nil" data-code-line-numbers="4,7,17" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1">fig_res_b1 <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span></span>
 <span id="cb44-2">  <span class="co" style="color: #5E5E5E;
@@ -1043,7 +1435,7 @@ background-color: null;
 font-style: inherit;"># beautify</span></span>
 <span id="cb44-24">  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">theme_bw</span>()</span></code></pre></div>
+font-style: inherit;">theme_bw</span>()</span></code></pre></div></div>
 </div>
 <ol type="1">
 <li>Add the <code>Frequency</code> estimate to all the by-participant slope deviances</li>
@@ -1054,27 +1446,33 @@ font-style: inherit;">theme_bw</span>()</span></code></pre></div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb45" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">library</span>(patchwork)</span>
-<span id="cb45-2">(fig_res_b0 <span class="sc" style="color: #5E5E5E;
+font-style: inherit;">library</span>(patchwork)</span></code></pre></div></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre data-code-line-numbers=""><code>Warning: package 'patchwork' was built under R version 4.4.3</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1">(fig_res_b0 <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span> fig_res_b1) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">/</span></span>
-<span id="cb45-3">  fig_res_dev <span class="sc" style="color: #5E5E5E;
+<span id="cb47-2">  fig_res_dev <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb45-4">  <span class="fu" style="color: #4758AB;
+<span id="cb47-3">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">plot_annotation</span>(<span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">tag_levels =</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"A"</span>)</span></code></pre></div>
+font-style: inherit;">"A"</span>)</span></code></pre></div></div>
 </details>
 <div class="cell-output-display">
-<div id="fig-comparisons" class="quarto-figure quarto-figure-center quarto-float anchored">
+<div id="fig-comparisons" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-comparisons-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="https://daniela-palleschi.github.io/blog/posts/dotplot/index_files/figure-html/fig-comparisons-1.png" class="img-fluid figure-img" style="width:100.0%">
@@ -1092,14 +1490,14 @@ Figure&nbsp;4: Comparison of manual visualisations of by-participant random effe
 <h2 class="anchored" data-anchor-id="interpretation">Interpretation</h2>
 <p>Notice that the two figures for the intercepts are pretty identical, save the linear transformation of the x-axis values. The varying slopes look a little different: this is due to the ordering of the participants, which in Figure&nbsp;4 B is ordered by the by-participant frequency slope value (e.g., participant Z has the smallest slope value, not to be confused with the magnitude/size of the effect as it’s actually the <em>largest</em> by-participant slope), whereas the right plot in Figure&nbsp;4 C is ordered by the varying intercept value presented in the left plot in Figure&nbsp;4 C. This is helpful because it also helps us visualise the correlation between by-participant varying intercepts and slopes, which is -0.877:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb46" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">VarCorr</span>(mod_lexdec)</span></code></pre></div>
+font-style: inherit;">VarCorr</span>(mod_lexdec)</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code> Groups   Name            Std.Dev. Corr  
  Word     (Intercept)     0.057138       
           NativeLanguage1 0.038380 0.874 
- Subject  (Intercept)     0.215033       
+ Subject  (Intercept)     0.215032       
           Frequency       0.019556 -0.877
  Residual                 0.169724       </code></pre>
 </div>
@@ -1108,13 +1506,13 @@ font-style: inherit;">VarCorr</span>(mod_lexdec)</span></code></pre></div>
 <p>Looking back at Figure&nbsp;4 B, the confidence intervals are also much wider than in the frequency plot in Figure&nbsp;4 C. This is simply because of the x-axis range: in the latter, the x-axis range is identical to that of the varying intercepts, which has a broader range. That is to say, there was more within-participant variance in overall reaction times than there was in the overall effect of frequency. Figure&nbsp;4 B simply has the range of values relevant for the slope values.</p>
 <p>Figure&nbsp;4 B could be further adapted to mimic the frequency slope figure in Figure&nbsp;4 C with some extra code (i.e., setting the x-axis range, re-ordering participants by corresponding intercept values). It’s a matter of what exactly you want to get from these visualisations that will decide what you prefer.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb48" data-source-line-numbers="nil" data-code-line-numbers="9,10,11,12,13,14,24,25,32,38,39" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1">fig_res_b1_corr <span class="ot" style="color: #003B4F;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50" data-source-line-numbers="nil" data-code-line-numbers="9,10,11,12,13,14,24,25,32,38,39" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1">fig_res_b1_corr <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span></span>
-<span id="cb48-2">  <span class="co" style="color: #5E5E5E;
+<span id="cb50-2">  <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># produce tidy table of random effects</span></span>
-<span id="cb48-3">  broom.mixed<span class="sc" style="color: #5E5E5E;
+<span id="cb50-3">  broom.mixed<span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
@@ -1129,7 +1527,7 @@ background-color: null;
 font-style: inherit;">TRUE</span>) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb48-4">  <span class="fu" style="color: #4758AB;
+<span id="cb50-4">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">mutate</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
@@ -1146,10 +1544,10 @@ background-color: null;
 font-style: inherit;">2</span>])) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb48-5">  <span class="co" style="color: #5E5E5E;
+<span id="cb50-5">  <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># by-Subject varying intercepts only</span></span>
-<span id="cb48-6">  <span class="fu" style="color: #4758AB;
+<span id="cb50-6">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">filter</span>(group <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -1158,10 +1556,10 @@ background-color: null;
 font-style: inherit;">"Subject"</span>) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb48-7">  <span class="co" style="color: #5E5E5E;
+<span id="cb50-7">  <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># rename (Intercept)</span></span>
-<span id="cb48-8">  <span class="fu" style="color: #4758AB;
+<span id="cb50-8">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -1176,15 +1574,15 @@ background-color: null;
 font-style: inherit;">"Intercept"</span>, term)) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span></span>
-<span id="cb48-9">  <span class="co" style="color: #5E5E5E;
+<span id="cb50-9">  <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># pivot to create single column for intercept/slope estimates and conf. int's </span></span>
-<span id="cb48-10">  tidyr<span class="sc" style="color: #5E5E5E;
+<span id="cb50-10">  tidyr<span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">pivot_wider</span>( </span>
-<span id="cb48-11">    <span class="at" style="color: #657422;
+<span id="cb50-11">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">id_cols =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -1193,21 +1591,21 @@ background-color: null;
 font-style: inherit;">"group"</span>, <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"level"</span>), </span>
-<span id="cb48-12">    <span class="at" style="color: #657422;
+<span id="cb50-12">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">values_from =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">c</span>(estimate, conf.low, conf.high), </span>
-<span id="cb48-13">    <span class="at" style="color: #657422;
+<span id="cb50-13">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">names_from =</span> term </span>
-<span id="cb48-14">  ) <span class="sc" style="color: #5E5E5E;
+<span id="cb50-14">  ) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb48-15">  <span class="co" style="color: #5E5E5E;
+<span id="cb50-15">  <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># remove unneeded variables</span></span>
-<span id="cb48-16">  <span class="fu" style="color: #4758AB;
+<span id="cb50-16">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">select</span>(<span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -1216,37 +1614,37 @@ background-color: null;
 font-style: inherit;">-</span>conf.high_Intercept) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb48-17">  <span class="co" style="color: #5E5E5E;
+<span id="cb50-17">  <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># rename variables</span></span>
-<span id="cb48-18">  <span class="fu" style="color: #4758AB;
+<span id="cb50-18">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">rename</span>(<span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">Intercept =</span> estimate_Intercept,</span>
-<span id="cb48-19">         <span class="at" style="color: #657422;
+<span id="cb50-19">         <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">estimate =</span> estimate_Frequency,</span>
-<span id="cb48-20">         <span class="at" style="color: #657422;
+<span id="cb50-20">         <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">conf.low =</span> conf.low_Frequency,</span>
-<span id="cb48-21">         <span class="at" style="color: #657422;
+<span id="cb50-21">         <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">conf.high =</span> conf.high_Frequency) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb48-22">  <span class="co" style="color: #5E5E5E;
+<span id="cb50-22">  <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># begin plotting</span></span>
-<span id="cb48-23">  <span class="fu" style="color: #4758AB;
+<span id="cb50-23">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">ggplot</span>() <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb48-24">  <span class="co" style="color: #5E5E5E;
+<span id="cb50-24">  <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># reorder participants (level) by intercept </span></span>
-<span id="cb48-25">  <span class="fu" style="color: #4758AB;
+<span id="cb50-25">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -1257,21 +1655,21 @@ background-color: null;
 font-style: inherit;">reorder</span>(level, Intercept)) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span> </span>
-<span id="cb48-26">  <span class="fu" style="color: #4758AB;
+<span id="cb50-26">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">geom_errorbar</span>(</span>
-<span id="cb48-27">    <span class="fu" style="color: #4758AB;
+<span id="cb50-27">    <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">xmin =</span> conf.low,</span>
-<span id="cb48-28">        <span class="at" style="color: #657422;
+<span id="cb50-28">        <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">xmax =</span> conf.high)</span>
-<span id="cb48-29">  ) <span class="sc" style="color: #5E5E5E;
+<span id="cb50-29">  ) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb48-30">  <span class="fu" style="color: #4758AB;
+<span id="cb50-30">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">geom_point</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -1280,10 +1678,10 @@ background-color: null;
 font-style: inherit;">"blue"</span>) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb48-31">  <span class="co" style="color: #5E5E5E;
+<span id="cb50-31">  <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># add vertical line for population-level intercept</span></span>
-<span id="cb48-32">  <span class="fu" style="color: #4758AB;
+<span id="cb50-32">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">geom_vline</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -1294,7 +1692,7 @@ background-color: null;
 font-style: inherit;">2</span>], <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># 3. </span></span>
-<span id="cb48-33">             <span class="at" style="color: #657422;
+<span id="cb50-33">             <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
 background-color: null;
@@ -1309,32 +1707,32 @@ background-color: null;
 font-style: inherit;">5</span>) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb48-34">  <span class="co" style="color: #5E5E5E;
+<span id="cb50-34">  <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># add informative labels</span></span>
-<span id="cb48-35">  <span class="fu" style="color: #4758AB;
+<span id="cb50-35">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"By-participant varying word-frequency slopes"</span>,</span>
-<span id="cb48-36">       <span class="at" style="color: #657422;
+<span id="cb50-36">       <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Participant ID"</span>,</span>
-<span id="cb48-37">       <span class="at" style="color: #657422;
+<span id="cb50-37">       <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Frequency (log ms)"</span>) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb48-38">  <span class="co" style="color: #5E5E5E;
+<span id="cb50-38">  <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># add x-axis ticks with an identical range to the intercept plot </span></span>
-<span id="cb48-39">  <span class="fu" style="color: #4758AB;
+<span id="cb50-39">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">scale_x_continuous</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -1349,37 +1747,37 @@ background-color: null;
 font-style: inherit;">0.4351213</span>)) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span> </span>
-<span id="cb48-40">  <span class="co" style="color: #5E5E5E;
+<span id="cb50-40">  <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># beautify</span></span>
-<span id="cb48-41">  <span class="fu" style="color: #4758AB;
+<span id="cb50-41">  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">theme_bw</span>()</span></code></pre></div>
+font-style: inherit;">theme_bw</span>()</span></code></pre></div></div>
 </div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb49" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">library</span>(patchwork)</span>
-<span id="cb49-2">  (fig_res_b0 <span class="sc" style="color: #5E5E5E;
+<span id="cb51-2">  (fig_res_b0 <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span> fig_res_b1_corr) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">/</span></span>
-<span id="cb49-3">    fig_res_dev <span class="sc" style="color: #5E5E5E;
+<span id="cb51-3">    fig_res_dev <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb49-4">  <span class="fu" style="color: #4758AB;
+<span id="cb51-4">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">plot_annotation</span>(<span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">tag_levels =</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"A"</span>)</span></code></pre></div>
+font-style: inherit;">"A"</span>)</span></code></pre></div></div>
 </details>
 <div class="cell-output-display">
-<div id="fig-comparisons2" class="quarto-figure quarto-figure-center quarto-float anchored">
+<div id="fig-comparisons2" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-comparisons2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="https://daniela-palleschi.github.io/blog/posts/dotplot/index_files/figure-html/fig-comparisons2-1.png" class="img-fluid figure-img" style="width:100.0%">
@@ -1393,7 +1791,7 @@ Figure&nbsp;5: Comparison of manual visualisations of by-participant random effe
 </div>
 <p>In Figure&nbsp;5 we see that the varying slope values are ordered by by-participant intercept value (maintaining the correlation visulation), and that the x-axis ranges are comparable. The only difference is htat in Figure&nbsp;5 B, the population-level slope value (-0.0398787) is centred, whereas in the frequency facet in Figure&nbsp;5 C, 0 is not quite centred. Let’s compare this one last time to the deviance dotplot we get with <code>lattice::dotplot(ranef())</code> (Figure&nbsp;6).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb50" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1">lattice<span class="sc" style="color: #5E5E5E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1">lattice<span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
@@ -1401,9 +1799,9 @@ font-style: inherit;">dotplot</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">ranef</span>(mod_lexdec))<span class="sc" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">$</span>Subject</span></code></pre></div>
+font-style: inherit;">$</span>Subject</span></code></pre></div></div>
 <div class="cell-output-display">
-<div id="fig-lattice" class="quarto-figure quarto-figure-center quarto-float anchored">
+<div id="fig-lattice" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-lattice-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="https://daniela-palleschi.github.io/blog/posts/dotplot/index_files/figure-html/fig-lattice-1.png" class="img-fluid figure-img" style="width:100.0%">
@@ -1420,20 +1818,21 @@ Figure&nbsp;6: <code>lattice::dotplot(ranef(mod_lexdec))$Subject</code>
 <section id="print-session-info" class="level1">
 <h1>Print session info</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb51" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53" data-source-line-numbers="nil" data-code-line-numbers="nil" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">sessionInfo</span>()</span></code></pre></div>
+font-style: inherit;">sessionInfo</span>()</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
-<pre data-code-line-numbers=""><code>R version 4.4.1 (2024-06-14)
-Platform: aarch64-apple-darwin20
-Running under: macOS Sonoma 14.6
+<pre data-code-line-numbers=""><code>R version 4.4.1 (2024-06-14 ucrt)
+Platform: x86_64-w64-mingw32/x64
+Running under: Windows 11 x64 (build 22631)
 
 Matrix products: default
-BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib 
-LAPACK: /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.0
+
 
 locale:
-[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+[1] LC_COLLATE=English_Canada.utf8  LC_CTYPE=English_Canada.utf8   
+[3] LC_MONETARY=English_Canada.utf8 LC_NUMERIC=C                   
+[5] LC_TIME=English_Canada.utf8    
 
 time zone: Europe/Berlin
 tzcode source: internal
@@ -1442,26 +1841,26 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] patchwork_1.2.0     broom.mixed_0.2.9.5 ggplot2_3.5.1      
-[4] lattice_0.22-6      lme4_1.1-35.3       Matrix_1.7-0       
-[7] janitor_2.2.0       dplyr_1.1.4         languageR_1.5.0    
+[1] patchwork_1.3.2     broom.mixed_0.2.9.6 ggplot2_4.0.1      
+[4] lattice_0.22-7      lme4_1.1-38         Matrix_1.7-4       
+[7] janitor_2.2.1       dplyr_1.2.1         languageR_1.6      
 
 loaded via a namespace (and not attached):
- [1] gtable_0.3.5      xfun_0.45         htmlwidgets_1.6.4 vctrs_0.6.5      
- [5] tools_4.4.1       generics_0.1.3    parallel_4.4.1    tibble_3.2.1     
- [9] fansi_1.0.6       pacman_0.5.1      pkgconfig_2.0.3   lifecycle_1.0.4  
-[13] compiler_4.4.1    farver_2.1.1      stringr_1.5.1     munsell_0.5.1    
-[17] codetools_0.2-20  snakecase_0.11.1  htmltools_0.5.8.1 yaml_2.3.8       
-[21] pillar_1.9.0      furrr_0.3.1       nloptr_2.0.3      tidyr_1.3.1      
-[25] MASS_7.3-60.2     boot_1.3-30       nlme_3.1-164      parallelly_1.37.1
-[29] tidyselect_1.2.1  digest_0.6.35     stringi_1.8.4     future_1.33.2    
-[33] purrr_1.0.2       listenv_0.9.1     labeling_0.4.3    forcats_1.0.0    
-[37] splines_4.4.1     fastmap_1.2.0     grid_4.4.1        colorspace_2.1-0 
-[41] cli_3.6.2         magrittr_2.0.3    utf8_1.2.4        broom_1.0.6      
-[45] withr_3.0.0       scales_1.3.0      backports_1.5.0   lubridate_1.9.3  
-[49] timechange_0.3.0  rmarkdown_2.27    globals_0.16.3    evaluate_0.24.0  
-[53] knitr_1.47        rlang_1.1.4       Rcpp_1.0.12       glue_1.7.0       
-[57] rstudioapi_0.16.0 minqa_1.2.6       jsonlite_1.8.8    R6_2.5.1         </code></pre>
+ [1] future_1.68.0      tidyr_1.3.1        generics_0.1.4     stringi_1.8.7     
+ [5] listenv_0.10.0     digest_0.6.39      magrittr_2.0.4     evaluate_1.0.5    
+ [9] grid_4.4.1         timechange_0.4.0   RColorBrewer_1.1-3 fastmap_1.2.0     
+[13] jsonlite_2.0.0     backports_1.5.0    purrr_1.2.0        scales_1.4.0      
+[17] codetools_0.2-20   reformulas_0.4.2   Rdpack_2.6.4       cli_3.6.5         
+[21] rlang_1.3.0        rbibutils_2.4      parallelly_1.45.1  splines_4.4.1     
+[25] withr_3.0.2        yaml_2.3.11        parallel_4.4.1     tools_4.4.1       
+[29] nloptr_2.2.1       minqa_1.2.8        forcats_1.0.1      pacman_0.5.1      
+[33] globals_0.18.0     boot_1.3-32        broom_1.0.11       vctrs_0.7.3       
+[37] R6_2.6.1           lifecycle_1.0.5    lubridate_1.9.4    snakecase_0.11.1  
+[41] stringr_1.6.0      MASS_7.3-65        furrr_0.3.1        pkgconfig_2.0.3   
+[45] pillar_1.11.1      gtable_0.3.6       glue_1.8.0         Rcpp_1.1.0        
+[49] xfun_0.54          tibble_3.3.0       tidyselect_1.2.1   rstudioapi_0.19.0 
+[53] knitr_1.50         farver_2.1.2       htmltools_0.5.9    nlme_3.1-168      
+[57] labeling_0.4.3     rmarkdown_2.30     compiler_4.4.1     S7_0.2.1          </code></pre>
 </div>
 </div>
 
@@ -1484,7 +1883,7 @@ Baayen, R. H., &amp; Shafaei-Bajestan, E. (2019). <em>languageR: Analyzing lingu
 <item>
   <title>APA 7 in papaja</title>
   <dc:creator>Daniela Palleschi</dc:creator>
-  <link>https://daniela-palleschi.github.io/blog/posts/papapja7/</link>
+  <link>https://daniela-palleschi.github.io/blog/posts/papaja7/</link>
   <description><![CDATA[ 
 
 
@@ -1500,19 +1899,19 @@ Baayen, R. H., &amp; Shafaei-Bajestan, E. (2019). <em>languageR: Analyzing lingu
 <li>Install developer version of <code>papaja</code>:</li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1">remotes<span class="sc" style="color: #5E5E5E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1">remotes<span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">install_github</span>(<span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"crsh/papaja@devel"</span>)</span></code></pre></div>
+font-style: inherit;">"crsh/papaja@devel"</span>)</span></code></pre></div></div>
 </div>
 <ol start="2" type="1">
 <li>Add to the YAML:</li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><span class="an" style="color: #5E5E5E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><span class="an" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">csl               :</span><span class="co" style="color: #5E5E5E;
 background-color: null;
@@ -1521,16 +1920,18 @@ font-style: inherit;"> "`r system.file('rmd', 'apa7.csl', package = 'papaja')`"<
 background-color: null;
 font-style: inherit;">documentclass     :</span><span class="co" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;"> "apa7"</span></span></code></pre></div>
+font-style: inherit;"> "apa7"</span></span></code></pre></div></div>
 </div>
 <p>And this:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><span class="an" style="color: #5E5E5E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><span class="an" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">header-includes:</span></span>
 <span id="cb3-2"><span class="ss" style="color: #20794D;
 background-color: null;
-font-style: inherit;">  - </span>|</span>
+font-style: inherit;">  - </span><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">|</span></span>
 <span id="cb3-3">    \makeatletter</span>
 <span id="cb3-4">    \renewcommand{\paragraph}{\@startsection{paragraph}{4}{\parindent}%</span>
 <span id="cb3-5">      {0\baselineskip \@plus 0.2ex \@minus 0.2ex}%</span>
@@ -1547,19 +1948,19 @@ font-style: inherit;">]</span>{\@startsection{subparagraph}{5}{1em}%</span>
 <span id="cb3-10">      {0\baselineskip \@plus 0.2ex \@minus 0.2ex}%</span>
 <span id="cb3-11">      {-\z@\relax}%</span>
 <span id="cb3-12">      {\normalfont\normalsize\bfseries\itshape\hspace{\parindent}{#1}\textit{\addperi}}{\relax}}</span>
-<span id="cb3-13">    \makeatother</span></code></pre></div>
+<span id="cb3-13">    \makeatother</span></code></pre></div></div>
 </div>
 <p>This was sufficient for my set-up. The additional LaTeX packages I needed were then listed directly under (and in line with) <code>\makatother</code>.</p>
 </section>
 <section id="testing" class="level2">
 <h2 class="anchored" data-anchor-id="testing">Testing</h2>
-<p>To test if APA 7 vs.&nbsp;6 was being used, I changed a BibTex entry for a reference to have more than 7 authors (e.g., by repeating all the author names until &gt;7). I then changed <code>csl: "</code>/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/papaja/rmd/apa7.csl<code>"</code> to <code>csl: "</code>/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/papaja/rmd/apa6.csl<code>"</code>. In the bibliography only 7 authors were listed (following apa 6). I then changed it back to <code>'apa7.csl</code>, and the rendered bibliography listed all authors (following apa 7). I took this as sufficient evidence that apa 7 was indeed being used. I then changed the BibTex authors back, of course.</p>
+<p>To test if APA 7 vs.&nbsp;6 was being used, I changed a BibTex entry for a reference to have more than 7 authors (e.g., by repeating all the author names until &gt;7). I then changed <code>csl: "``"</code> to <code>csl: "``"</code>. In the bibliography only 7 authors were listed (following apa 6). I then changed it back to <code>'apa7.csl</code>, and the rendered bibliography listed all authors (following apa 7). I took this as sufficient evidence that apa 7 was indeed being used. I then changed the BibTex authors back, of course.</p>
 </section>
 <section id="yaml" class="level2">
 <h2 class="anchored" data-anchor-id="yaml">YAML</h2>
 <p>For reference, the YAML in my final metafile looks something like this:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><span class="co" style="color: #5E5E5E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">---</span></span>
 <span id="cb4-2"><span class="an" style="color: #5E5E5E;
@@ -1671,7 +2072,7 @@ background-color: null;
 font-style: inherit;"> |</span></span>
 <span id="cb4-27"><span class="co" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">  \addORCIDlink{Daniela M. Palleschi}{0000-0002-7633-2736}</span></span>
+font-style: inherit;">  \addORCIDlink{Daniela M. Palleschi}{0000-XXXX-XXXX-XXXX}</span></span>
 <span id="cb4-28"><span class="an" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">header-includes:</span></span>
@@ -1772,7 +2173,7 @@ background-color: null;
 font-style: inherit;">  chunk_output_type: console</span></span>
 <span id="cb4-60"><span class="co" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">---</span></span></code></pre></div>
+font-style: inherit;">---</span></span></code></pre></div></div>
 </div>
 
 
@@ -1783,7 +2184,7 @@ font-style: inherit;">---</span></span></code></pre></div>
  ]]></description>
   <category>reproducibility</category>
   <category>writing</category>
-  <guid>https://daniela-palleschi.github.io/blog/posts/papapja7/</guid>
+  <guid>https://daniela-palleschi.github.io/blog/posts/papaja7/</guid>
   <pubDate>Sun, 18 Feb 2024 23:00:00 GMT</pubDate>
 </item>
 </channel>

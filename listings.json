@@ -2,8 +2,9 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/zenodo/index.html",
       "/posts/dotplot/index.html",
-      "/posts/papapja7/index.html"
+      "/posts/papaja7/index.html"
     ]
   }
 ]
