@@ -69,11 +69,22 @@ Since opening to the public in 2012, OSF has been a general-purpose project spac
 
 Reading this, I looked at my own OSF account and realised I was guilty too (et tu, Brute?): I had dormant private projects I barely remembered. Not research projects with data in them, but materials for ideas that never went anywhere. A drop in the bucket, but clearly the bucket was overflowing.
 
-Still, I was rather shocked by the announcement. OSF has been a field-spanning mainstay across the research life cycle for years, and an integral part of my own research workflow. I read all the related announcements and posts from COS, and sent a (long-winded) email to my institute's members in my capacity as research data manager, suggesting alternatives while trying not to let my own internal moral panic show. I scoured Reddit and Bluesky for reactions, but found surprisingly little (I even trudged back to the platform formerly known as Twitter, which admittedly hasn't been the place for open science moral panic since you-know-what). Maybe I'm overreacting? Talking to colleagues, it didn't seem so. Either way, it feels like a bad sign.
+Still, I was rather shocked by the announcement. OSF has been a field-spanning mainstay across the research life cycle for years, and an integral part of my own research workflow. I read all the related announcements and posts from COS, and sent a (long-winded) email to my institute's members in my capacity as research data manager, suggesting alternatives while trying not to let my own internal moral panic show. I scoured places like Reddit and Bluesky for reactions, but found surprisingly little (I even trudged back to the platform formerly known as Twitter, which admittedly hasn't been the place for open science moral panic since you-know-what). There were a few posts from people who also expressed feeling unmoored by the announcement, but the replies conveyed a more pragmatic reaction that was reassuring (e.g., posts on [ResearchGate](https://www.researchgate.net/post/OSF_Projects_are_being_discontinued-where_next), [Reddit](https://www.reddit.com/r/academia/comments/1vliu7f/open_science_framework_osf_is_closing_to_new_data/), and @fig-grandma on [Bluesky](https://bsky.app/profile/jinxungoh.bsky.social/post/3mssujbihxk2f)). Maybe I was overreacting? Talking to colleagues, it didn't seem so. Either way, it felt like a bad sign.
+
+```{r}
+#| label: fig-grandma
+#| fig-cap: "From a reply from [Jin X. Goh](https://bsky.app/profile/jinxungoh.bsky.social) on to a post about the OSF announcement on [Bluesky](https://bsky.app/profile/jinxungoh.bsky.social/post/3mssujbihxk2f)"
+#| echo: false
+#| eval: true
+#| output: true
+#| out-width: "50%"
+
+knitr::include_graphics(here::here("posts", "zenodo", "bluesky_JinXGoh.png"))
+```
 
 I was struck by how fragile the funding behind it was. COS is a charity that relies mostly on philanthropic funding and institutional memberships, and its applications for US federal infrastructure funding (NSF) were unsuccessful. If a platform this widely used can't secure stable funding, that should be a warning to all of us: open science infrastructure doesn't maintain itself.
 
-As a Canadian living in Europe, I don't see much risk to open science in my own work or local infrastructure, though as this whole topic shows, US decisions reach us anyway. Even if the response is to build and use more EU or non-US infrastructure, science is cumulative and community-driven, and as a whole it's affected by what happens in the States. We all depend on the tools we share.
+As a Canadian living in Europe, I don't see much risk to open science in my own work or local infrastructure, though as this whole topic shows, US decisions reach us anyway (and I shouldn't be too confident, American researchers probably also weren't very worried 10 years ago). Even if the response is to build and use more EU or non-US infrastructure, science is cumulative and community-driven, and as a whole it's affected by what happens in the States. We all depend on the tools we share.
 
 That said, I'll keep using OSF for pre-registrations (and for pre-prints, once I finally post one). It's been a couple of months since OSF Projects were announced to be phased out, and I've moved on from moral panic to figuring out a new workflow with new tools. So, on a more optimistic note: here's what we can do about it!
 
