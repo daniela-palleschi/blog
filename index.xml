@@ -88,9 +88,23 @@
 <h2 class="anchored" data-anchor-id="background-and-my-personal-reaction-why-is-osf-changing">Background and my personal reaction: why is OSF changing?</h2>
 <p>Since opening to the public in 2012, OSF has been a general-purpose project space, hosting preregistrations, preprints, and project repositories. In his <a href="https://www.cos.io/blog/osf-changes-a-note-to-users">note to users</a>, co-founder Brian Nosek explained that this flexibility became costly: maintaining so many use cases, plus fighting a constant flood of spam, left too little funding to improve the platform. Part of the problem was private storage. Around 63% of OSF projects (over 650,000) have never been made public, and almost 200,000 users have used OSF purely as free private storage. That doesn’t serve the mission of open science, but still costs money to maintain.</p>
 <p>Reading this, I looked at my own OSF account and realised I was guilty too (et tu, Brute?): I had dormant private projects I barely remembered. Not research projects with data in them, but materials for ideas that never went anywhere. A drop in the bucket, but clearly the bucket was overflowing.</p>
-<p>Still, I was rather shocked by the announcement. OSF has been a field-spanning mainstay across the research life cycle for years, and an integral part of my own research workflow. I read all the related announcements and posts from COS, and sent a (long-winded) email to my institute’s members in my capacity as research data manager, suggesting alternatives while trying not to let my own internal moral panic show. I scoured Reddit and Bluesky for reactions, but found surprisingly little (I even trudged back to the platform formerly known as Twitter, which admittedly hasn’t been the place for open science moral panic since you-know-what). Maybe I’m overreacting? Talking to colleagues, it didn’t seem so. Either way, it feels like a bad sign.</p>
+<p>Still, I was rather shocked by the announcement. OSF has been a field-spanning mainstay across the research life cycle for years, and an integral part of my own research workflow. I read all the related announcements and posts from COS, and sent a (long-winded) email to my institute’s members in my capacity as research data manager, suggesting alternatives while trying not to let my own internal moral panic show. I scoured places like Reddit and Bluesky for reactions, but found surprisingly little (I even trudged back to the platform formerly known as Twitter, which admittedly hasn’t been the place for open science moral panic since you-know-what). There were a few posts from people who also expressed feeling unmoored by the announcement, but the replies conveyed a more pragmatic reaction that was reassuring (e.g., posts on <a href="https://www.researchgate.net/post/OSF_Projects_are_being_discontinued-where_next">ResearchGate</a>, <a href="https://www.reddit.com/r/academia/comments/1vliu7f/open_science_framework_osf_is_closing_to_new_data/">Reddit</a>, and Figure&nbsp;1 on <a href="https://bsky.app/profile/jinxungoh.bsky.social/post/3mssujbihxk2f">Bluesky</a>). Maybe I was overreacting? Talking to colleagues, it didn’t seem so. Either way, it felt like a bad sign.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-grandma" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-grandma-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://daniela-palleschi.github.io/blog/posts/zenodo/bluesky_JinXGoh.png" class="img-fluid figure-img" style="width:50.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-grandma-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: From a reply from <a href="https://bsky.app/profile/jinxungoh.bsky.social">Jin X. Goh</a> on to a post about the OSF announcement on <a href="https://bsky.app/profile/jinxungoh.bsky.social/post/3mssujbihxk2f">Bluesky</a>
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
 <p>I was struck by how fragile the funding behind it was. COS is a charity that relies mostly on philanthropic funding and institutional memberships, and its applications for US federal infrastructure funding (NSF) were unsuccessful. If a platform this widely used can’t secure stable funding, that should be a warning to all of us: open science infrastructure doesn’t maintain itself.</p>
-<p>As a Canadian living in Europe, I don’t see much risk to open science in my own work or local infrastructure, though as this whole topic shows, US decisions reach us anyway. Even if the response is to build and use more EU or non-US infrastructure, science is cumulative and community-driven, and as a whole it’s affected by what happens in the States. We all depend on the tools we share.</p>
+<p>As a Canadian living in Europe, I don’t see much risk to open science in my own work or local infrastructure, though as this whole topic shows, US decisions reach us anyway (and I shouldn’t be too confident, American researchers probably also weren’t very worried 10 years ago). Even if the response is to build and use more EU or non-US infrastructure, science is cumulative and community-driven, and as a whole it’s affected by what happens in the States. We all depend on the tools we share.</p>
 <p>That said, I’ll keep using OSF for pre-registrations (and for pre-prints, once I finally post one). It’s been a couple of months since OSF Projects were announced to be phased out, and I’ve moved on from moral panic to figuring out a new workflow with new tools. So, on a more optimistic note: here’s what we can do about it!</p>
 </section>
 <section id="workflow" class="level2">
@@ -101,6 +115,7 @@
 <li><strong>During review:</strong> an anonymised mirror of that repo, shared with reviewers via Anonymous GitHub</li>
 <li><strong>After acceptance:</strong> the GitHub repo made public, with a release archived on Zenodo for a citable snapshot and DOI</li>
 </ol>
+<p>Note that this workflow leaves out two stages where OSF remains just as useful: preregistering a study during the planning phase, and posting a preprint (which, since it reveals the authors anyway, makes anonymisation during the peer review process somewhat moot). I want to stress that both remain highly valuable services from COS, and pillars of open science!</p>
 <section id="before-you-start-the-golden-rule" class="level3">
 <h3 class="anchored" data-anchor-id="before-you-start-the-golden-rule">Before you start: the golden rule</h3>
 <p>Never push identifiable or personal data to GitHub, not even to a private repo. Only fully anonymised data should leave your institution’s storage.</p>
