@@ -65,7 +65,7 @@ In short: Zenodo is a great home for anonymised data, code and materials. Person
 
 ## Background and my personal reaction: why is OSF changing?
 
-Since opening to the public in 2012, OSF has been a general-purpose project space, hosting preregistrations, preprints, and project repositories. In his [note to users](https://www.cos.io/blog/osf-changes-a-note-to-users), co-founder Brian Nosek explained that this flexibility became costly: maintaining so many use cases, plus fighting a constant flood of spam, left too little funding to improve the platform. Part of the problem was private storage. Around 63% of OSF projects (over 650,000) have never been made public, and almost 200,000 users have used OSF purely as free private storage. That doesn't serve the mission of open science, but still costs money to maintain.
+Since opening to the public in 2012, OSF has been a general-purpose project space, hosting preregistrations, pre-prints, and project repositories. In his [note to users](https://www.cos.io/blog/osf-changes-a-note-to-users), co-founder Brian Nosek explained that this flexibility became costly: maintaining so many use cases, plus fighting a constant flood of spam, left too little funding to improve the platform. Part of the problem was private storage. Around 63% of OSF projects (over 650,000) have never been made public, and almost 200,000 users have used OSF purely as free private storage. That doesn't serve the mission of open science, but still costs money to maintain.
 
 Reading this, I looked at my own OSF account and realised I was guilty too (et tu, Brute?): I had dormant private projects I barely remembered. Not research projects with data in them, but materials for ideas that never went anywhere. A drop in the bucket, but clearly the bucket was overflowing.
 
@@ -96,7 +96,24 @@ Here's my current workflow for sharing an anonymised repository with reviewers. 
 2. **During review:** an anonymised mirror of that repo, shared with reviewers via Anonymous GitHub
 3. **After acceptance:** the GitHub repo made public, with a release archived on Zenodo for a citable snapshot and DOI
 
-Note that this workflow leaves out two stages where OSF remains just as useful: preregistering a study during the planning phase, and posting a preprint (which, since it reveals the authors anyway, makes anonymisation during the peer review process somewhat moot). I want to stress that both remain highly valuable services from COS, and pillars of open science!
+Note that this workflow leaves out two stages where OSF remains just as useful: preregistering a study during the planning phase, and posting a pre-print (which, since it reveals the authors anyway, makes anonymisation during the peer review process somewhat moot). I want to stress that both remain highly valuable services from COS, and pillars of open science!
+
+@fig-flowchart summarises the whole workflow, from planning to archiving. Identifiable data stays on internal infrastructure throughout, and external repositories only come into play after pre-processing and anonymisation. GitHub users can push code and anonymised data to a private repository during analysis, share an Anonymous GitHub mirror during review, and publish a Zenodo record linked to the GitHub repository after acceptance. Without GitHub, everything stays internal until review, when a Zenodo draft is shared with reviewers and then made public once the paper is accepted. The dashed arrows show possible alternatives with drawbacks: for example, moving from a Zenodo draft to a GitHub-linked record creates a second Zenodo record with a separate DOI.
+
+```{r}
+#| label: fig-flowchart
+#| fig-cap: "Recommended data handling and sharing across the research life cycle. Identifiable data stays on your institute's internal infrastructure throughout; external services (GitHub, Zenodo) are only used for code and fully anonymised data, as well as relevant documentation (READMEs, data dictionary, etc.)."
+#| echo: false
+#| eval: true
+#| output: true
+#| out-width: "75%"
+
+knitr::include_graphics(here::here("posts", "zenodo", "peer_review-lifecycle-generic.png"))
+```
+
+I haven't included pre-prints in the workflow, since they're not part of my recommendation (though it's not like I recommend *against* them!). If you'd like to post one, it would fit between analysis and peer review. Keep in mind that a pre-print reveals the authors, which makes anonymising your materials for double-blind review somewhat moot, so check your journal's pre-print policy first. OSF pre-prints (e.g. PsyArXiv) remains available, and for linguists, LingBuzz is another common option.
+
+My original draft of @fig-flowchart didn't include the pre-processing stage, which makes explicit that anonymisation has to happen before anything enters an external repository. On reflection, it felt too important to leave implicit. So before we finally get to the workflow itself, the next section covers a few key points on anonymisation and data sharing.
 
 ### Before you start: the golden rule
 
@@ -277,7 +294,7 @@ Though this process is more effort than ticking "anonymise" on an OSF view-only 
 
 I personally use GitHub a lot, but I'm more hesitant to push research data there, and have gladly used an institutional GitLab instance for this in the past (shout out to the HU Berlin; if you have a HU account check it out: [https://scm.cms.hu-berlin.de/](https://scm.cms.hu-berlin.de/)). Zenodo's GitHub integration is fairly seamless, but it lacks the simplicity of OSF's one-click anonymisation. Then again, uploading and organising files on OSF was a pain. Zenodo has no folder structure at all: you simply upload single files or zipped folders. That keeps uploading simple, but means files inside a zip can't be opened in the browser, they're only listed. You win some, you lose some.
 
-With OSF stepping back as a repository, I hope Zenodo will make anonymised sharing for review easier, making this whole post obsolete. Until then, we work with what we've got.
+With OSF stepping back as a repository, I hope Zenodo will make anonymised sharing for review easier, making this whole post obsolete. To that end, I've opened a [feature request on Zenodo's GitHub](https://github.com/zenodo/zenodo-rdm/issues/1503) for anonymised review links and better GitHub integration. If this affects you too, a 👍 on the issue helps show there's demand. Until then, we work with what we've got.
 
 ## Honourable mentions
 
