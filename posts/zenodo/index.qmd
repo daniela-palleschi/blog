@@ -22,9 +22,13 @@ OSF Projects are being phased out in early 2027, and with them the easily anonym
 
 [Click here](#workflow) to skip all the fluff and get straight to the workflow description.
 
+> Updates:
+>
+> **2026-29-10**: added links to relevant discussions [@lakens_2026_repository; @burke_2026_reflection]
+
 ## Why this post
 
-The Center for Open Science is phasing out OSF Projects: no new projects can be created after November 16 2026, and all existing projects become read-only on February 19 2027 ([COS announcement](https://www.cos.io/osf-changes)). Thankfully, pre-registrations and pre-prints stay, but OSF's anonymised view-only links for reviewers vanish along with the projects. Though there are alternative repositories for sharing research data, currently none of them has as seamless a process as the OSF for sharing anonymised reviewer links. Several colleagues have mentioned this as a particular sticking point: how do we share materials anonymously with reviewers moving forward?
+The Center for Open Science is phasing out OSF Projects: no new projects can be created after November 16 2026, and all existing projects become read-only on February 19 2027 ([COS announcement](https://www.cos.io/osf-changes)). Thankfully, pre-registrations and pre-prints stay, but OSF's anonymised view-only links for reviewers vanish along with the projects. The announcement has prompted discussion about where researchers should move their data and materials [e.g., @lakens_2026_repository; @burke_2026_reflection]. While there are alternative repositories for sharing research data, currently none of them has as seamless a process as the OSF for sharing anonymised reviewer links. Several colleagues have mentioned this as a particular sticking point: how do we share materials anonymously with reviewers moving forward?
 
 I recently shared the code, data and rendered output of an analysis report (a Quarto book documenting my entire analysis workflow, with each chapter a separate Quarto document) with anonymous reviewers. Since we don't know whether our paper will be accepted by February, I didn't want to rely on setting up an OSF Project that might be read-only during the review process and need to be moved elsewhere. I took the opportunity to try out two replacements for sharing materials during double-blind review (once the paper is accepted, I'll add the links to my anonymised repos):
 
