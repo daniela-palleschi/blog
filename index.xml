@@ -35,9 +35,13 @@
 </div>
 </div>
 <p>Click here to skip all the fluff and get straight to the workflow description.</p>
+<blockquote class="blockquote">
+<p>Updates:</p>
+<p><strong>2026-29-10</strong>: added links to relevant discussions <span class="citation" data-cites="lakens_2026_repository burke_2026_reflection">(Burke, 2026; Lakens, 2026)</span></p>
+</blockquote>
 <section id="why-this-post" class="level2">
 <h2 class="anchored" data-anchor-id="why-this-post">Why this post</h2>
-<p>The Center for Open Science is phasing out OSF Projects: no new projects can be created after November 16 2026, and all existing projects become read-only on February 19 2027 (<a href="https://www.cos.io/osf-changes">COS announcement</a>). Thankfully, pre-registrations and pre-prints stay, but OSF’s anonymised view-only links for reviewers vanish along with the projects. Though there are alternative repositories for sharing research data, currently none of them has as seamless a process as the OSF for sharing anonymised reviewer links. Several colleagues have mentioned this as a particular sticking point: how do we share materials anonymously with reviewers moving forward?</p>
+<p>The Center for Open Science is phasing out OSF Projects: no new projects can be created after November 16 2026, and all existing projects become read-only on February 19 2027 (<a href="https://www.cos.io/osf-changes">COS announcement</a>). Thankfully, pre-registrations and pre-prints stay, but OSF’s anonymised view-only links for reviewers vanish along with the projects. The announcement has prompted discussion about where researchers should move their data and materials <span class="citation" data-cites="lakens_2026_repository burke_2026_reflection">(e.g., Lakens, 2026; Burke, 2026)</span>. While there are alternative repositories for sharing research data, currently none of them has as seamless a process as the OSF for sharing anonymised reviewer links. Several colleagues have mentioned this as a particular sticking point: how do we share materials anonymously with reviewers moving forward?</p>
 <p>I recently shared the code, data and rendered output of an analysis report (a Quarto book documenting my entire analysis workflow, with each chapter a separate Quarto document) with anonymous reviewers. Since we don’t know whether our paper will be accepted by February, I didn’t want to rely on setting up an OSF Project that might be read-only during the review process and need to be moved elsewhere. I took the opportunity to try out two replacements for sharing materials during double-blind review (once the paper is accepted, I’ll add the links to my anonymised repos):</p>
 <ol type="1">
 <li><strong>Anonymous GitHub mirror</strong> (<a href="https://anonymous.4open.science">anonymous.4open.science</a>): an anonymised mirror of a GitHub repo</li>
@@ -412,6 +416,12 @@ Tip
 </section>
 
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2">
+<div id="ref-burke_2026_reflection" class="csl-entry">
+Burke, M. C. (2026). <em>A reflection on repositories</em>. Zenodo. <a href="https://doi.org/10.5281/zenodo.22940977">https://doi.org/10.5281/zenodo.22940977</a>
+</div>
+<div id="ref-lakens_2026_repository" class="csl-entry">
+Lakens, D. (2026). <em>Which data repository should you use?</em> <a href="https://daniellakens.blogspot.com/2026/08/which-data-repository-should-you-use.html" class="uri">https://daniellakens.blogspot.com/2026/08/which-data-repository-should-you-use.html</a>.
+</div>
 <div id="ref-rocher2019" class="csl-entry">
 Rocher, L., Hendrickx, J. M., &amp; Montjoye, Y.-A. de. (2019). Estimating the success of re-identifications in incomplete datasets using generative models. <em>Nature Communications</em>, <em>10</em>, 3069. <a href="https://doi.org/10.1038/s41467-019-10933-3">https://doi.org/10.1038/s41467-019-10933-3</a>
 </div>
